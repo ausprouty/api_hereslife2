@@ -1,16 +1,16 @@
 <template>
   <div>
     <!-- Show the registration form if no user exists -->
-    <div v-if="!authStore.userExists">
+    <div v-if="!authStore.administratorExists">
       <h2>Register</h2>
       <form @submit.prevent="handleRegister">
       <div class="form-group">
-          <label for="firstName">First Name:</label>
-          <input type="text" class="short-input" v-model="registerData.firstName" required />
+          <label for="first_name">First Name:</label>
+          <input type="text" class="short-input" v-model="registerData.first_name" required />
         </div>
         <div class="form-group">
-          <label for="lastName">Last Name:</label>
-          <input type="text" class="short-input"  v-model="registerData.lastName" required />
+          <label for="last_name">Last Name:</label>
+          <input type="text" class="short-input"  v-model="registerData.last_name" required />
         </div>
         <div class="form-group">
           <label for="username">Username:</label>
@@ -52,8 +52,8 @@ export default {
     const hlApiKey = import.meta.env.VITE_APP_HL_API_KEY;
 
     const registerData = ref({
-      firstName: '',
-      lastName: '',
+      first_name: '',
+      last_name: '',
       username: '',
       password: '',
       apiKey: hlApiKey,
@@ -85,8 +85,8 @@ export default {
     };
 
     onMounted(() => {
-      // Check if the user exists when the component is mounted
-      authStore.checkAuth();
+      // Check if the administratpor exists when the component is mounted
+      authStore.checkIfAdministratorExists();
     });
 
     return {

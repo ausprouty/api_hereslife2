@@ -1,22 +1,14 @@
 <?php
 
-use App\Services\SanitizeInputService;
-use App\Controllers\Data\PostInputController;
-use App\Services\AuthorizationService;
-// clean input data 
-$sanitizeInputService = new SanitizeInputService();
-$postInputController = new PostInputController(
-    $sanitizeInputService
-);
-// check if the request is authorized
-$authorized = AuthorizationService::checkApiKey($postInputController->getApiKey());
-if (!$authorized){
-    error_log('not authorized');
-    http_response_code(401);
-    return 'not authorized';
-}
+
+// Instantiate the required services
 
 use App\Models\People\AdministratorModel;
-// Instantiate the required services
-$databaseService = new DatabaseService($database = 'standard');
+use App\Services\DatabaseService;
+$databaseService = new DatabaseService('standard');
+
+// Verify if there is an administrator
 $administratorModel = new AdministratorModel($databaseService);
+$administratorExists = $administratorModel->exists();
+echo $administratorExists;
+return $administratorExists;

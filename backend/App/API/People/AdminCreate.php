@@ -17,8 +17,15 @@ if (!$authorized){
 }
 
 // Instantiate the required services
-$databaseService = new DatabaseService($database = 'standard');
+
 use App\Models\People\AdministratorModel;
+use App\Services\DatabaseService;
+$databaseService = new DatabaseService('standard');
+
+
+// Create a new administrator
 $administratorModel = new AdministratorModel($databaseService);
-$administratorModel->create($postInputController->getPostData());
+$data = $postInputController->getDataSet();
+writeLog('AdminCreate-34', $data);
+$administratorModel->create($data);
 

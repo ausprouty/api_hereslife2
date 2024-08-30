@@ -4,30 +4,34 @@ import axios from 'axios';
 const apiUrl = import.meta.env.VITE_APP_API_URL;
 
 const apiKey = import.meta.env.VITE_APP_HL_API_KEY;
-console.log(import.meta.env)
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null,
     token: null,
+    administratorExists: false,
   }),
 
   getters: {
     isAuthenticated: (state) => !!state.user,
   },
-  
+
   actions: {
-    async administratorExists() {
+    async checkIfAdministratorExists() {
+      console.log(`checking if admin exists`);
       try {
-        console.log (`${apiUrl}admin/exists`);
-        userData.apiKey = apiKey;
-        const response = await axios.get(`${apiUrl}admin/exists`, userData);
-        this.token = response.data.token;
-        this.user = response.data.user;
+        console.log(`${apiUrl}admin/exists`);
+        const response = await axios.get(`${apiUrl}admin/exists`);
+        console.log('admin exists:', response.data);
+
+        // Directly update the state
+        this.administratorExists = response.data.exists; // Adjust this based on your actual response structure
       } catch (error) {
-        console.error('Registration failed', error);
+        console.error('Failed to check if admin exists:', error);
+        this.administratorExists = false; // Handle error case by setting a default value
       }
     },
+
     async register(userData) {
       try {
         console.log (`${apiUrl}admin/register`);
@@ -86,4 +90,5 @@ export const useAuthStore = defineStore('auth', {
         }
       },
   },
+  
 });

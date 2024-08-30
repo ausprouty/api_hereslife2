@@ -13,9 +13,11 @@ class DatabaseService{
     private $port;
     private $dbConnection;
 
-    public function __construct($configType = 'standard'){
+    public function __construct($dummy = 'standard'){
+        $configType = 'standard';
         writeLog('DatabaseService-15', $configType);
         if (!isset(DATABASES[$configType])) {
+            writeLog('DatabaseService-17', 'Configuration type not found');
             throw new InvalidArgumentException("Configuration type '$configType' not found.");
         }
         $config = DATABASES[$configType];
@@ -27,6 +29,8 @@ class DatabaseService{
         $this->charset = $config['DB_CHARSET'];
         $this->collation = $config['DB_COLLATION'];
         $this->prefix = $config['PREFIX'];
+        writeLog('DatabaseService-31', 'Attempting to connect to the database');
+            
         $this->connect();
       }
 

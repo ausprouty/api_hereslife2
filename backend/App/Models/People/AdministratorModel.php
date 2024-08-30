@@ -13,20 +13,21 @@ class AdministratorModel {
     public $password;
     public $salt;
 
-    public function __construct($database = 'standard') {  
-        $this->databaseService = new DatabaseService($database);
+    // Use dependency injection to pass the DatabaseService instance
+    public function __construct(DatabaseService $databaseService) {  
+        $this->databaseService = $databaseService;
     }
     // At this time we only allow one administrator
     public function exists() {
-        $query = "SELECT count(*) FROM hl_administrators";
-        $result = $this->databaseService->executeUpdate($query);
+        $query = "SELECT count(*) as cnt FROM hl_administrators";
+        $result = $this->databaseService->executeQuery($query);
+        $data = $result->fetch(PDO::FETCH_ASSOC);
         // Assuming executeQuery returns a result set
-    if ($result) {
-        writeLog('Administrator-25', $result);
-        $count = $result[0]['cnt'] ?? 0;  // Adjust based on your database service's return structure
-        return $count > 0;
-    }
-    return false;  // In case the query fails or returns no result
+        if ($data) {
+            $count = $data['cnt'] ?? 0;  // Adjust based on your database service's return structure
+            return $count > 0;
+        }
+        return false;  // In case the query fails or returns no result
      
     }
 
@@ -34,8 +35,8 @@ class AdministratorModel {
     public function create($data) {
         $salt = $this->generateSalt();
         $hashedPassword = $this->hashPassword($data['password'], $salt);
-        $query = "INSERT INTO administrators (first_name, last_name, username, password, salt)   
-                  VALUES (:first_name, :last_name, :username, :password, :salt";
+        $query = "INSERT INTO hl_administrators (first_name, last_name, username, password, salt)   
+                  VALUES (:first_name, :last_name, :username, :password, :salt)";
         $params = [
             ':first_name' => $data['first_name'],
             ':last_name' => $data['last_name'],

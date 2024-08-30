@@ -61,7 +61,11 @@ class PostInputController
 
     public function getDataSet()
     {
-        return $this->sanitizedData;
+        $data = $this->sanitizedData ?? [];
+        if (isset($data['apiKey'])) {
+            unset($data['apiKey']);
+        }
+        return $data;
     }
 
     public function getApiKey()

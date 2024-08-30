@@ -1,6 +1,6 @@
 <?php
 
-error_reporting(E_ERROR);
+error_reporting(E_ALL);
 // Set CORS headers
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
@@ -10,16 +10,18 @@ header("Access-Control-Allow-Credentials: true");
  ***************************************************/
 $accepted_origins = array(
     "http://localhost:5173",
+    "http://localhost:5173/",
     "http://localhost",
     "https://hereslife.com",
     "https://api.hereslife.com",
     "https://axd.5f8.myftpupload.com"
 );
 // Handle preflight requests
+error_log("\n\n" . $_SERVER['HTTP_ORIGIN'] . "\n\n");
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     error_log('options');
     if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $accepted_origins)) {
-        error_log('setting allowed origin in options');
+        //error_log('setting allowed origin in options');
         header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
         header('Access-Control-Allow-Credentials: true');
         header("HTTP/1.1 200 OK");
@@ -30,24 +32,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
         exit;
     }
 }
-
+error_log("continuing after options\n\n");
 require_once  __DIR__.'/App/Configuration/my-autoload.inc.php';
 require_once  __DIR__.'/Vendor/autoload.php';
 $dir = __DIR__ ;
+error_log($dir  );
 ///home/hereslife/api.hereslife.com/backend
 if ( $dir == '/home/hereslife/api.hereslife.com/backend'){
     error_log('I want to include remote');
     require_once $dir .'/App/Configuration/.env.remote.php';
-    $path = '/backend/';
     $location = 'remote';
     
 }
 else{
     require_once $dir .'/App/Configuration/.env.local.php';
-    $path = '/api_hereslife/backend/';
+    
     $location = 'local';
 }
-//error_log($location);
+error_log($location);
 require_once __DIR__ .'/router.php';
 require_once __DIR__.'/App/Includes/writeLog.php';
 
@@ -60,6 +62,8 @@ if (isset($headers['Authorization'])) {
     writelog('Routes-40','Token: ' . $token);
     // Proceed with token validation and request processing
 }  
+
+$path = PATH;
 //error_log ($path . 'spirit/titles');
 get($path, '/App/Views/indexLocal.php');
 get($path . 'admin/exists', 'App/API/People/AdminExists.php');
@@ -74,7 +78,6 @@ get($path . 'test', 'App/API/Materials/getTractsToView.php');
 get($path . 'tracts/view', 'App/API/Materials/getTractsToView.php');
 
 post($path . 'admin/create', 'App/API/People/AdminCreate.php');
-get($path . 'admin/create', 'App/API/People/AdminCreate.php');
 post($path . 'admin/login', 'App/API/People/AdminLogin.php');
 post($path . 'email/images', 'App/API/Emails/UploadImages.php');
 post($path . 'email/images/upload', 'App/API/Emails/UploadImages.php');
