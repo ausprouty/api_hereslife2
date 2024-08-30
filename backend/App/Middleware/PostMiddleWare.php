@@ -6,7 +6,7 @@ use App\Services\SanitizeInputService;
 use App\Controllers\Data\PostInputController;
 use App\Services\AuthorizationService;
 
-class ApiMiddleware {
+class PostMiddleware {
     public static function handle($request, $next) {
         // Clean input data
         $sanitizeInputService = new SanitizeInputService();

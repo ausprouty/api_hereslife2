@@ -88,7 +88,7 @@ post($path . 'email/send', 'App/API/Emails/SendEmail.php');
 post($path . 'email/series', 'App/API/Emails/SeriesEmailTextUpdate.php');
 post($path . 'materials/download', 'App/API/Materials/DownloadMaterialsUpdateUser.php');
 
-if ($location == 'local'){
+if (ENVIRONMENT == 'local'){
     get($path . 'test/spirit/titles', 'App/Tests/canGetSpiritTitlesByLanguage.php');
     get($path . 'test/tracts/view', 'App/Tests/canGetTractsToView.php');
     get($path . 'test/tracts/monolingual', 'App/Tests/canGetTractsMonolingual.php');
