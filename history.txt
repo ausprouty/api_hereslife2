@@ -1,0 +1,11 @@
+npm run dev
+npm run build
+
+npm run build-remote
+
+
+npm install cross-env --save-dev
+
+
+https://www.tiny.cloud/docs/tinymce/5/vue/
+https://stackoverflow.com/questions/75706520/tinymce-selfhosted-with-vue-3-fails-to-load-styles

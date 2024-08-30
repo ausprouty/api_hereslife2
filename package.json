@@ -1,0 +1,29 @@
+{
+  "name": "api_hereslife",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build-remote": "cross-env NODE_ENV=production VITE_ENV_FILE=.env.remote vite build",
+    "build-remote2": "vite build --mode production",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@ckeditor/ckeditor5-build-classic": "^42.0.2",
+    "@ckeditor/ckeditor5-source-editing": "^42.0.2",
+    "@ckeditor/ckeditor5-vue": "^6.0.0",
+    "@tinymce/tinymce-vue": "^6.0.1",
+    "axios": "^1.7.3",
+    "pinia": "^2.2.2",
+    "tinymce": "^7.3.0",
+    "vue": "^3.4.31",
+    "vue-router": "^4.0.13"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.5",
+    "cross-env": "^7.0.3",
+    "vite": "^5.3.4"
+  }
+}

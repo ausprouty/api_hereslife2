@@ -1,0 +1,44 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+.env*
+*.local
+public/*
+
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.env*
+
+# Backend
+
+backend/.htaccess
+backend/App.zip
+backend/App/Configuration/.env*
+backend/logs/*
+backend/Imports/data/*
+backend/Vendor/*
+backend/Resources/*
+backend/App/Logs/*
+backend/Imports/*
+backend/Libraries/HtmlPurifier/*
+
+
+

@@ -1,0 +1,6 @@
+{
+    "require": {
+        "ezyang/htmlpurifier": "^4.17",
+        "smtp2go-oss/smtp2go-php": "^1.1"
+    }
+}

@@ -1,0 +1,105 @@
+<template>
+  <div>
+    <!-- Show the registration form if no user exists -->
+    <div v-if="!authStore.userExists">
+      <h2>Register</h2>
+      <form @submit.prevent="handleRegister">
+      <div class="form-group">
+          <label for="firstName">First Name:</label>
+          <input type="text" class="short-input" v-model="registerData.firstName" required />
+        </div>
+        <div class="form-group">
+          <label for="lastName">Last Name:</label>
+          <input type="text" class="short-input"  v-model="registerData.lastName" required />
+        </div>
+        <div class="form-group">
+          <label for="username">Username:</label>
+          <input type="text" class="short-input"  v-model="registerData.username" required />
+        </div>
+        <div class="form-group">
+          <label for="password">Password:</label>
+          <input type="password" class="short-input" v-model="registerData.password" required />
+        </div>
+        <button type="submit">Register</button>
+      </form>
+    </div>
+
+    <!-- Show the login form if a user already exists -->
+    <div v-else>
+      <h2>Login</h2>
+      <form @submit.prevent="handleLogin">
+        <div class="form-group">
+          <label for="username">Username:</label>
+          <input type="text"  class="short-input" v-model="loginData.username" required />
+        </div>
+        <div class="form-group">
+          <label for="password">Password:</label>
+          <input type="password" class="short-input" v-model="loginData.password" required />
+        </div>
+        <button type="submit">Login</button>
+      </form>
+    </div>
+  </div>
+</template>
+
+<script>
+import { ref, onMounted } from 'vue';
+import { useAuthStore } from '@/stores/AuthStore';
+
+export default {
+  setup() {
+    const authStore = useAuthStore();
+    const hlApiKey = import.meta.env.VITE_APP_HL_API_KEY;
+
+    const registerData = ref({
+      firstName: '',
+      lastName: '',
+      username: '',
+      password: '',
+      apiKey: hlApiKey,
+    });
+
+    const loginData = ref({
+      username: '',
+      password: '',
+      apiKey: hlApiKey,
+    });
+
+    const handleRegister = async () => {
+      try {
+    
+        console.log (registerData.value)
+        const response = await authStore.register(registerData.value);
+        console.log (response)
+      } catch (error) {
+        console.error('Registration failed:', error);
+      }
+    };
+
+    const handleLogin = async () => {
+      try {
+        await authStore.login(loginData.value);
+      } catch (error) {
+        console.error('Login failed:', error);
+      }
+    };
+
+    onMounted(() => {
+      // Check if the user exists when the component is mounted
+      authStore.checkAuth();
+    });
+
+    return {
+      authStore,
+      registerData,
+      loginData,
+      handleRegister,
+      handleLogin,
+    };
+  },
+};
+</script>
+
+<style scoped>
+/* Add your styles here */
+</style>

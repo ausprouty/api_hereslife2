@@ -1,0 +1,5 @@
+start local server on right
+
+
+http://localhost/api_hereslife/backend/spirit/titles works
+

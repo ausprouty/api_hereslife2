@@ -1,0 +1,55 @@
+
+<!doctype html>
+<html>
+<title>{{subject}}</title>
+<style type="text/css">
+	img,a img{
+		border:0;
+		height:auto;
+		outline:none;
+		text-decoration:none;
+	}
+	.full{
+		width:100%;
+	}
+	.signature{
+		width:200px;
+	}
+	html{
+		background-color: #efefef;
+	}
+	body{
+		margin:auto;
+		background-color: #fff;
+		padding:10px;
+		width:100%;
+		font-family:Arial;
+		max-width:600px;
+	}
+</style>
+<body style= "width:100%; max-width:600px; background-color: #ffffff;">
+<div>
+	<a href="https://hereslife.com" target="_blank">
+		<img alt="Power To Change" class="full" src="{{header}}">
+	</a>
+</div>
+<div>
+	{{body}}
+</div>
+<div>
+<img class="signature" style= "width:200px;" alt="signature" src="{{signature}}">
+<br>
+
+	<img  style="width:100%; max-width:600px;" class="full" src="{{author-bio}}"><br>
+</div>
+<div>
+	{{postscript}}
+</div>
+<div><p> You are receiving this email because you came to hereslife.com and typed your email address before downloading materials from the website. </p> 
+<p> Our privacy statement says that we will only use your email address to send you information you requested or to tell you about new resources and events which can help you become more effective in reaching cross-cultural communities with the Gospel. </p>
+<p>
+Here is how to <a href="|EMAIL_UNSUB|">unsubscribe from our mailings</a>
+</p>
+</div>
+</body>
+</html>

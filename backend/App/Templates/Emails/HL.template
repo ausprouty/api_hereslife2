@@ -1,0 +1,55 @@
+
+<!doctype html>
+<html>
+<title>*|MC:SUBJECT|*</title>
+<style type="text/css">
+	img,a img{
+		border:0;
+		height:auto;
+		outline:none;
+		text-decoration:none;
+	}
+	.full{
+		width:100%;
+		max-width:600px;
+	}
+	.signature{
+		width:200px;
+	}
+	html{
+		background-color: #efefef;
+	}
+	body{
+		margin:auto;
+		background-color: #fff;
+		padding:10px;
+		width:100%;
+		font-family:Arial;
+		max-width:600px;
+	}
+</style>
+<body style= "width:100%; max-width:600px; background-color: #ffffff;">
+<div>
+	<a href="https://hereslife.com" target="_blank">
+		<img alt="Power To Change" class="full" src="|MP:POWERTOCHANGE|">
+	</a>
+</div>
+<div>
+	|MC:CONTENT|
+</div>
+<div>
+<img class="signature" style= "width:200px;" alt="signature" src="|MP:SIGN|">
+<br>
+
+	<img  class="full" style="width:100%; max-width:600px;"  src="|MP:BOB|"><br>
+</div>
+<div>
+	|MP:POSTSCRIPT|
+</div>
+<div>
+<p>
+Here is how to <a href="|MC:UNSUB|">unsubscribe from this list</a>
+</p>
+</div>
+</body>
+</html>

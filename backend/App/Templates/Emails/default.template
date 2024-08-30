@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+<head>
+    <title>{{subject}}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css">
+        img, a img {
+            border: 0;
+            height: auto;
+            outline: none;
+            text-decoration: none;
+        }
+        .full {
+            width: 100%;
+            height: auto;
+        }
+        .signature {
+            width: 200px;
+            height: auto;
+        }
+        html {
+            background-color: #efefef;
+        }
+        body {
+            margin: auto;
+            background-color: #fff;
+            padding: 10px;
+            width: 100%;
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            line-height: 1.5;
+        }
+        /* Responsive design */
+        @media only screen and (max-width: 600px) {
+            body {
+                padding: 15px;
+            }
+            .signature {
+                width: 100%;
+                max-width: 200px;
+                height: auto;
+            }
+        }
+        /* Ensure all text is left-justified */
+        .email-content, p {
+            text-align: left;
+        }
+    </style>
+</head>
+<body style="width: 100%; max-width: 600px; background-color: #ffffff;">
+    <div>
+        <a href="https://hereslife.com" target="_blank">
+            <img alt="Power To Change" class="full" src="{{header}}">
+        </a>
+    </div>
+    <div class="email-content">
+        {{body}}
+    </div>
+    <div>
+        <img class="signature" alt="signature" src="{{signature}}">
+        <br>
+        <img class="full" src="{{author-bio}}">
+    </div>
+    <div class="email-content">
+        {{postscript}}
+    </div>
+    <div class="email-content">
+        <p>You are receiving this email because you came to hereslife.com and typed your email address before downloading materials from the website.</p>
+        <p>Our privacy statement says that we will only use your email address to send you information you requested or to tell you about new resources and events which can help you become more effective in reaching cross-cultural communities with the Gospel.</p>
+        <p>Here is how to <a href="|EMAIL_UNSUB|">unsubscribe from our mailings</a></p>
+    </div>
+</body>
+</html>
