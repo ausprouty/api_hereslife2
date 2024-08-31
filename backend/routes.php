@@ -1,68 +1,7 @@
 <?php
-
-error_reporting(E_ALL);
-// Set CORS headers
-header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
-header("Access-Control-Allow-Credentials: true");
-/***************************************************
- * Only these origins are allowed to upload images *
- ***************************************************/
-$accepted_origins = array(
-    "http://localhost:5173",
-    "http://localhost:5173/",
-    "http://localhost",
-    "https://hereslife.com",
-    "https://api.hereslife.com",
-    "https://axd.5f8.myftpupload.com"
-);
-// Handle preflight requests
-error_log("\n\n" . $_SERVER['HTTP_ORIGIN'] . "\n\n");
-if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-    error_log('options');
-    if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $accepted_origins)) {
-        //error_log('setting allowed origin in options');
-        header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
-        header('Access-Control-Allow-Credentials: true');
-        header("HTTP/1.1 200 OK");
-        exit;
-    } else {
-        error_log('options says forbidden');
-        header("HTTP/1.1 403 Forbidden Source");
-        exit;
-    }
-}
-error_log("continuing after options\n\n");
-require_once  __DIR__.'/App/Configuration/my-autoload.inc.php';
-require_once  __DIR__.'/Vendor/autoload.php';
-$dir = __DIR__ ;
-error_log($dir  );
-///home/hereslife/api.hereslife.com/backend
-if ( $dir == '/home/hereslife/api.hereslife.com/backend'){
-    error_log('I want to include remote');
-    require_once $dir .'/App/Configuration/.env.remote.php';
-    $location = 'remote';
-    
-}
-else{
-    require_once $dir .'/App/Configuration/.env.local.php';
-    
-    $location = 'local';
-}
-error_log($location);
 require_once __DIR__ .'/router.php';
-require_once __DIR__.'/App/Includes/writeLog.php';
 
-error_log('SERVER: ' . print_r($_SERVER, true));
-$headers = apache_request_headers();
-if (isset($headers['Authorization'])) {
-    writelog('Routes-37','Authorization');
-    $authHeader = $headers['Authorization'];
-    $token = str_replace('Bearer ', '', $authHeader); // Extract the token
-    writelog('Routes-40','Token: ' . $token);
-    // Proceed with token validation and request processing
-}  
-
+writeLog('routes-3', 'I entered routes.php');
 $path = PATH;
 //error_log ($path . 'spirit/titles');
 get($path, '/App/Views/indexLocal.php');

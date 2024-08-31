@@ -1,6 +1,12 @@
 <?php
 // index.php
 
+// Load the appropriate environment configuration
+require_once __DIR__ . '/App/Configuration/config.php'; // Load environment-specific config
+
+// Load Debugging tools
+require_once __DIR__ . '/App/Includes/writeLog.php'; 
+writeLog('index-9', 'I am in index.php');
 // Error reporting based on environment
 if ($_SERVER['SERVER_NAME'] === 'localhost') {
     error_reporting(E_ALL);
@@ -14,32 +20,34 @@ if ($_SERVER['SERVER_NAME'] === 'localhost') {
 require_once __DIR__ . '/App/Configuration/my-autoload.inc.php';
 require_once __DIR__ . '/Vendor/autoload.php';
 
-use App\Middleware\EnvironmentMiddleware;
+writeLog('index-23', 'I am in index.php');
 use App\Middleware\PreflightMiddleware;
 use App\Middleware\PostMiddleware;
 use App\Middleware\CORSMiddleware;
 use App\Middleware\AuthorizationMiddleware;
 use App\Middleware\FinalMiddleware;
 
-// Error reporting and environment setup could be managed in EnvironmentMiddleware
-// Any other setup files needed can be included here
-
 // Middleware stack function to handle the middleware flow
 function applyMiddleware($middlewares, $request) {
-    $next = function($request) use (&$middlewares, &$next) {
+    $postInputController = null;
+    writeLog('index-9', 'I am in index.php');
+    $next = function($request, $postInputController) use (&$middlewares, &$next) {
         if (empty($middlewares)) {
-            return null; // Or some default response
+            return $postInputController; // Return the PostInputController when no more middleware
         }
         $middleware = array_shift($middlewares);
-        return $middleware->handle($request, $next);
+        return $middleware->handle($request, function($request, $newPostInputController = null) use ($next, $postInputController) {
+            // If a new PostInputController is provided, update the reference
+            $postInputController = $newPostInputController ?: $postInputController;
+            return $next($request, $postInputController);
+        });
     };
     
-    return $next($request);
+    return $next($request, $postInputController);
 }
 
 // Define the middleware stack
 $middlewares = [
-    new EnvironmentMiddleware(),
     new PreflightMiddleware(),
     new CORSMiddleware(),
     new PostMiddleware(),
@@ -47,8 +55,14 @@ $middlewares = [
     new FinalMiddleware()
 ];
 
-// Apply the middleware stack
-applyMiddleware($middlewares, $_SERVER);
+// Apply the middleware stack and capture the PostInputController
+$postInputController = applyMiddleware($middlewares, $_SERVER);
 
+// Pass the PostInputController to routes.php
+if ($postInputController !== null) {
+    // Use the sanitized data within routes.php
+    $postData = $postInputController->getDataSet();
+    // Pass the data to your routing logic as needed
+}
 // Main application logic or routing
-require_once __DIR__ . '/router.php';
+require_once __DIR__ . '/routes.php';

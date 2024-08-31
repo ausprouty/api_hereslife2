@@ -4,6 +4,7 @@ Namespace App\Middleware;
 
 class PreflightMiddleware {
     public function handle($request, $next) {
+        writeLog('PreflightMiddleware-12', 'I am in PreflightMiddleware');
         // Fetch accepted origins from .env
         $acceptedOrigins = explode(',', getenv('ACCEPTED_ORIGINS'));
 

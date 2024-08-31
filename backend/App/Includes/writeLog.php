@@ -1,6 +1,8 @@
 <?php
 
 function writeLog($filename, $content) {
+    error_log('writeLog:'   . $filename . ' ' . $content);
+    error_log('LOG_MODE:' . LOG_MODE);
     if (LOG_MODE !== 'write_log' && LOG_MODE !== 'write_time_log') {
         return;
     }

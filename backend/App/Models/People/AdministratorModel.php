@@ -24,10 +24,11 @@ class AdministratorModel {
         $data = $result->fetch(PDO::FETCH_ASSOC);
         // Assuming executeQuery returns a result set
         if ($data) {
-            $count = $data['cnt'] ?? 0;  // Adjust based on your database service's return structure
-            return $count > 0;
+            if ($data['cnt'] >0){
+                return 'TRUE';
+            };  // Adjust based on your database service's return structure  
         }
-        return false;  // In case the query fails or returns no result
+        return 'FALSE';  // In case the query fails or returns no result
      
     }
 
