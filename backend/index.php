@@ -6,7 +6,6 @@ require_once __DIR__ . '/App/Configuration/config.php'; // Load environment-spec
 
 // Load Debugging tools
 require_once __DIR__ . '/App/Includes/writeLog.php'; 
-writeLog('index-9', 'I am in index.php');
 // Error reporting based on environment
 if ($_SERVER['SERVER_NAME'] === 'localhost') {
     error_reporting(E_ALL);
@@ -20,7 +19,6 @@ if ($_SERVER['SERVER_NAME'] === 'localhost') {
 require_once __DIR__ . '/App/Configuration/my-autoload.inc.php';
 require_once __DIR__ . '/Vendor/autoload.php';
 
-writeLog('index-23', 'I am in index.php');
 use App\Middleware\PreflightMiddleware;
 use App\Middleware\PostMiddleware;
 use App\Middleware\CORSMiddleware;
@@ -30,7 +28,6 @@ use App\Middleware\FinalMiddleware;
 // Middleware stack function to handle the middleware flow
 function applyMiddleware($middlewares, $request) {
     $postInputController = null;
-    writeLog('index-9', 'I am in index.php');
     $next = function($request, $postInputController) use (&$middlewares, &$next) {
         if (empty($middlewares)) {
             return $postInputController; // Return the PostInputController when no more middleware

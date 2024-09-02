@@ -18,14 +18,18 @@ export const useAuthStore = defineStore('auth', {
 
   actions: {
     async checkIfAdministratorExists() {
-      console.log(`checking if admin exists`);
       try {
-        console.log(`${apiUrl}admin/exists`);
         const response = await axios.get(`${apiUrl}admin/exists`);
-        console.log('admin exists:', response.data);
+        if (response.data == 'TRUE'){
+          console.log('admin exists');
+          this.administratorExists = true; // Adjust this based on your actual response structure
+        }
+        else{
+          console.log('admin does not exist');
+          this.administratorExists = false; // Adjust this based on your actual response structure
 
-        // Directly update the state
-        this.administratorExists = response.data.exists; // Adjust this based on your actual response structure
+        }
+
       } catch (error) {
         console.error('Failed to check if admin exists:', error);
         this.administratorExists = false; // Handle error case by setting a default value
