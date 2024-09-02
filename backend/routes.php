@@ -2,6 +2,7 @@
 require_once __DIR__ .'/router.php';
 
 writeLog('routes-3', 'I entered routes.php');
+writeLog('routes-4', $postData);
 $path = PATH;
 //error_log ($path . 'spirit/titles');
 get($path, '/App/Views/indexLocal.php');
@@ -16,16 +17,16 @@ get($path . 'spirit/titles', 'App/API/Materials/getSpiritTitles.php');
 get($path . 'test', 'App/API/Materials/getTractsToView.php');
 get($path . 'tracts/view', 'App/API/Materials/getTractsToView.php');
 
-post($path . 'admin/create', 'App/API/People/AdminCreate.php');
-post($path . 'admin/login', 'App/API/People/AdminLogin.php');
+post($path . 'admin/create', 'App/API/People/AdminCreate.php', $postData);
+post($path . 'admin/login', 'App/API/People/AdminLogin.php', $postData);
 post($path . 'email/images', 'App/API/Emails/UploadImages.php');
 post($path . 'email/images/upload', 'App/API/Emails/UploadImages.php');
 post($path . 'email/images/upload/tinymce', 'App/API/Emails/UploadImagesTinyMce.php');
 post($path . 'email/images/upload/tinymce2', 'App/API/Emails/UploadImagesTinyMce2.php');
-post($path . 'email/que/emails', 'App/API/Emails/QueEmails.php');
-post($path . 'email/send', 'App/API/Emails/SendEmail.php');
-post($path . 'email/series', 'App/API/Emails/SeriesEmailTextUpdate.php');
-post($path . 'materials/download', 'App/API/Materials/DownloadMaterialsUpdateUser.php');
+post($path . 'email/que/emails', 'App/API/Emails/QueEmails.php',$postData);
+post($path . 'email/send', 'App/API/Emails/SendEmail.php',$postData);
+post($path . 'email/series', 'App/API/Emails/SeriesEmailTextUpdate.php',$postData);
+post($path . 'materials/download', 'App/API/Materials/DownloadMaterialsUpdateUser.php', $postData);
 
 if (ENVIRONMENT == 'local'){
     get($path . 'test/spirit/titles', 'App/Tests/canGetSpiritTitlesByLanguage.php');

@@ -6,12 +6,12 @@ use PDO;
 
 class AdministratorModel {
     private $databaseService;
-    public $id;
-    public $first_name;
-    public $last_name;
-    public $username;
-    public $password;
-    public $salt;
+    private $id;
+    private $first_name;
+    private $last_name;
+    private $username;
+    private $password;
+    private $salt;
 
     // Use dependency injection to pass the DatabaseService instance
     public function __construct(DatabaseService $databaseService) {  
@@ -45,7 +45,8 @@ class AdministratorModel {
             ':password' => $hashedPassword,
             ':salt' => $salt // Hash the password
         ];
-        return $this->databaseService->executeUpdate($query, $params);
+        $this->databaseService->executeUpdate($query, $params);
+        $this->id = $this->databaseService->getPDO()->lastInsertId();
     }
    
     // Update administrator details
@@ -98,5 +99,8 @@ class AdministratorModel {
     // Verify a password against a hash and salt
     private function verifyPassword($password, $hashedPassword, $salt) {
         return hash('sha256', $password . $salt) === $hashedPassword;
+    }
+    public function getId() {
+        return $this->id;
     }
 }

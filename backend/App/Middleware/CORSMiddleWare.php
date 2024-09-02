@@ -6,8 +6,7 @@ class CORSMiddleware {
     public function handle($request, $next) {
         // Fetch accepted origins from .env
         $acceptedOrigins = explode(',', ACCEPTED_ORIGINS);
-        writeLog('CORSMiddleware-9', $acceptedOrigins);
-        writeLog('CORSMiddleware-10', $_SERVER['HTTP_ORIGIN']);
+   
 
         // Check if the request origin is in the list of accepted origins
         if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $acceptedOrigins)) {

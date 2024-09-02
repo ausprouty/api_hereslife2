@@ -6,9 +6,9 @@ use App\Services\SanitizeInputService;
 use App\Controllers\Data\PostInputController;
 use App\Services\AuthorizationService;
 
-class PostMiddleware {
+class PostAuthorizationMiddleware {
     public function handle($request, $next) {
-        writeLog('PostMiddleware-12', 'I am in PostMiddleware');
+    
             // Check if the request method is POST
         $postInputController = null; 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {

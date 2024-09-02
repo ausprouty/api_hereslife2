@@ -20,9 +20,8 @@ require_once __DIR__ . '/App/Configuration/my-autoload.inc.php';
 require_once __DIR__ . '/Vendor/autoload.php';
 
 use App\Middleware\PreflightMiddleware;
-use App\Middleware\PostMiddleware;
+use App\Middleware\PostAuthorizationMiddleware;
 use App\Middleware\CORSMiddleware;
-use App\Middleware\AuthorizationMiddleware;
 use App\Middleware\FinalMiddleware;
 
 // Middleware stack function to handle the middleware flow
@@ -47,8 +46,7 @@ function applyMiddleware($middlewares, $request) {
 $middlewares = [
     new PreflightMiddleware(),
     new CORSMiddleware(),
-    new PostMiddleware(),
-    new AuthorizationMiddleware(),
+    new PostAuthorizationMiddleware(),
     new FinalMiddleware()
 ];
 
