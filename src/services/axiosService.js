@@ -8,15 +8,15 @@ const axiosInstance = axios.create({
 });
 
 axiosInstance.interceptors.request.use(config => {
-  const envToken = import.meta.env.VITE_ENV_TOKEN;
+  const envToken = import.meta.env.VITE_APP_HL_API_KEY;
   const localStorageToken = localStorage.getItem('auth_token');
   
   if (envToken) {
-    config.headers['Env-Authorization'] = `Bearer ${envToken}`;
+    config.headers['Site-Authorization'] = `Bearer ${envToken}`;
   }
   
   if (localStorageToken) {
-    config.headers['Authorization'] = `Bearer ${localStorageToken}`;
+    config.headers['User-Authorization'] = `Bearer ${localStorageToken}`;
   }
    // Log the modified config object after setting headers
    console.log('Modified Axios Request Config:', config);

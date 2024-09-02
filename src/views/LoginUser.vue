@@ -49,26 +49,20 @@ import { useAuthStore } from '@/stores/AuthStore';
 export default {
   setup() {
     const authStore = useAuthStore();
-    const hlApiKey = import.meta.env.VITE_APP_HL_API_KEY;
-
     const registerData = ref({
       first_name: '',
       last_name: '',
       username: '',
       password: '',
-      apiKey: hlApiKey,
     });
 
     const loginData = ref({
       username: '',
-      password: '',
-      apiKey: hlApiKey,
+      password: ''
     });
 
     const handleRegister = async () => {
       try {
-    
-        console.log (registerData.value)
         const response = await authStore.register(registerData.value);
         console.log (response)
       } catch (error) {
