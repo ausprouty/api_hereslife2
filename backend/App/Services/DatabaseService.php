@@ -78,6 +78,9 @@ class DatabaseService{
             throw new Exception("Error executing the update: " . $e->getMessage());
         }
     }
+    public function getLastInsertId() {
+        return $this->dbConnection->lastInsertId();
+    }
     
 
     /**

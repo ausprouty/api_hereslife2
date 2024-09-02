@@ -9,4 +9,5 @@ $databaseService = new DatabaseService('standard');
 $administratorModel = new AdministratorModel($databaseService);
 $administratorExists = $administratorModel->exists();
 echo ($administratorExists);
+
 return $administratorExists;

@@ -8,9 +8,9 @@ class AuthorizationService
 {
     private $secretKey;
 
-    public function __construct($secretKey)
+    public function __construct()
     {
-        $this->secretKey = $secretKey;
+        $this->secretKey = JWT_SECRET_KEY;
     }
 
     public function generateJWT($userId, $authLevel = 'user')

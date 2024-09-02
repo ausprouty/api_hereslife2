@@ -2,25 +2,22 @@
 
 
 // Instantiate the required services
-
+use App\Services\AuthorizationService;
 use App\Models\People\AdministratorModel;
 use App\Services\DatabaseService;
 
 $databaseService = new DatabaseService('standard');
-
 // Create a new administrator
-
 $administratorModel = new AdministratorModel($databaseService);
 $administratorModel->create($postData);
 $userId = $administratorModel->getId();
-writeLog('AdminCreate-35', $userId);
-$token = $administratorModel->getToken($userId, 'admin');
-writeLog('AdminCreate-37', $token);
+$jwtService = new AuthorizationService();
+$token = $jwtService->generateJWT($userId, 'admin');
 $data = [
-    'message' => 'Administrator created successfully',
-    'id' => $userId,
+    'success' => true,
+    'user' => $userId,
     'token' => $token,
 ];
-writeLog('AdminCreate-42', $data);
+header('Content-Type: application/json');
 echo json_encode($data);
 

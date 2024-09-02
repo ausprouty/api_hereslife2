@@ -40,10 +40,13 @@ export const useAuthStore = defineStore('auth', {
       try {
         console.log (`${apiUrl}admin/register`);
         userData.apiKey = apiKey;
-        console.log (userData);
         const response = await axios.post(`${apiUrl}admin/create`, userData);
         this.token = response.data.token;
         this.user = response.data.user;
+        this.administratorExists = true;
+        // Optionally, store token in localStorage
+        localStorage.setItem('authToken', this.token);
+  
       } catch (error) {
         console.error('Registration failed', error);
       }

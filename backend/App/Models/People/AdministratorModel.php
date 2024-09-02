@@ -46,7 +46,7 @@ class AdministratorModel {
             ':salt' => $salt // Hash the password
         ];
         $this->databaseService->executeUpdate($query, $params);
-        $this->id = $this->databaseService->getPDO()->lastInsertId();
+        $this->id = $this->databaseService->getLastInsertId();
     }
    
     // Update administrator details
