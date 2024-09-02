@@ -18,7 +18,8 @@ axiosInstance.interceptors.request.use(config => {
   if (localStorageToken) {
     config.headers['Authorization'] = `Bearer ${localStorageToken}`;
   }
-  
+   // Log the modified config object after setting headers
+   console.log('Modified Axios Request Config:', config);
   return config;
 }, error => {
   return Promise.reject(error);

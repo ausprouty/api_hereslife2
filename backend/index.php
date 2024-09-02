@@ -59,5 +59,8 @@ if ($postInputController !== null) {
     $postData = $postInputController->getDataSet();
     // Pass the data to your routing logic as needed
 }
+else{
+    $postData = null;
+}
 // Main application logic or routing
 require_once __DIR__ . '/routes.php';

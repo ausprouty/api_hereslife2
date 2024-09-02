@@ -1,9 +1,5 @@
 import { defineStore } from 'pinia';
-import axios from 'axios';
-
-const apiUrl = import.meta.env.VITE_APP_API_URL;
-
-const apiKey = import.meta.env.VITE_APP_HL_API_KEY;
+import axiosService from '@/services/axiosService';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -19,14 +15,15 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     async checkIfAdministratorExists() {
       try {
-        const response = await axios.get(`${apiUrl}admin/exists`);
-        if (response.data == 'TRUE'){
+        const response = await axiosService.get('admin/exists');
+        console.log (response)
+        if (response.data.data == 'TRUE'){
           console.log('admin exists');
-          this.administratorExists = true; // Adjust this based on your actual response structure
+          this.administratorExists = true; 
         }
         else{
           console.log('admin does not exist');
-          this.administratorExists = false; // Adjust this based on your actual response structure
+          this.administratorExists = false; 
 
         }
 
@@ -38,9 +35,7 @@ export const useAuthStore = defineStore('auth', {
 
     async register(userData) {
       try {
-        console.log (`${apiUrl}admin/register`);
-        userData.apiKey = apiKey;
-        const response = await axios.post(`${apiUrl}admin/create`, userData);
+        const response = await axiosService.post('admin/create', userData);
         this.token = response.data.token;
         this.user = response.data.user;
         this.administratorExists = true;
@@ -54,8 +49,7 @@ export const useAuthStore = defineStore('auth', {
 
     async login(credentials) {
       try {
-        credentials.apiKey = apiKey;
-        const response = await axios.post(`${apiUrl}admin/login`, credentials);
+        const response = await axiosService.post('admin/logi', credentials);
         this.token = response.data.token;
         this.user = response.data.user;
         // Optionally, store token in localStorage
@@ -75,7 +69,7 @@ export const useAuthStore = defineStore('auth', {
       const token = localStorage.getItem('authToken');
       if (token) {
         try {
-          const response = await axios.get(`${apiUrl}user/authentication`, {
+          const response = await axiosService.get('user/authentication', {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -87,15 +81,6 @@ export const useAuthStore = defineStore('auth', {
         }
       }
     },
-    async checkUserExists() {
-        try {
-          const response = await axios.get('your-api-url/checkUserExists');
-          this.userExists = response.data.exists;
-        } catch (error) {
-          console.error('Failed to check if user exists:', error);
-          this.userExists = false;
-        }
-      },
   },
   
 });
