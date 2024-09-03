@@ -13,10 +13,11 @@ $userId = $administratorModel->getId();
 $jwtService = new AuthorizationService();
 $token = $jwtService->generateJWT($userId, 'admin');
 $data = [
-    'success' => true,
+    'success' => 'TRUE',
     'user' => $userId,
     'token' => $token,
 ];
 header('Content-Type: application/json');
+writeLog('AdimnCreate-21', $data);
 echo json_encode($data);
 

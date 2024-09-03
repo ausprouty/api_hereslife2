@@ -15,38 +15,22 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     async checkIfAdministratorExists() {
       try {
-        const response = await axiosService.get('admin/exists',{ skipUserId: true });
-        console.log (response)
-        if (response.data.data == 'TRUE'){
-          console.log('admin exists');
-          this.administratorExists = true; 
-        }
-        else{
-          console.log('admin does not exist');
-          this.administratorExists = false; 
-
-        }
-
+        const { data } = await axiosService.get('admin/exists', { skipUserId: true });
+        this.administratorExists = data.data === 'TRUE';
       } catch (error) {
         console.error('Failed to check if admin exists:', error);
-        this.administratorExists = false; // Handle error case by setting a default value
+        this.administratorExists = false;
       }
     },
 
     async register(userData) {
       try {
-        console.log(userData);
-        const response = await axiosService.post('admin/create', userData,{ skipUserId: true });
-        if (response.message == 'success'){
-          console.log('admin created successfully');
-          this.token = response.data.token;
-          this.user = response.data.user;
+        const { data } = await axiosService.post('admin/create', userData, { skipUserId: true });
+        if (data.success === 'TRUE') {
+          this.token = data.token;
+          this.user = data.user;
           this.administratorExists = true;
-          // Optionally, store token in sessionStorage
-          sessionStorage.setItem('userToken', this.token);
-          sessionStorage.setItem('userId', this.user);
-        }
-        else{
+        } else {
           alert('Administrator not created. Reprogramming required');
           this.administratorExists = false;
         }
@@ -57,13 +41,14 @@ export const useAuthStore = defineStore('auth', {
 
     async login(credentials) {
       try {
-        console.log(credentials);
-        const response = await axiosService.post('admin/login', credentials,{ skipUserId: true });
-        this.token = response.data.token;
-        this.user = response.data.user;
-        // Optionally, store token in sessionStorage
-        sessionStorage.setItem('userToken', this.token);
-        sessionStorage.setItem('userId', this.user);
+        const { data } = await axiosService.post('admin/login', credentials, { skipUserId: true });
+        if (data.success === 'FALSE') {
+          alert('Invalid username or password');
+          return 'Invalid username or password';
+        }
+        this.token = data.token;
+        this.user = data.user;
+        return 'Success';
       } catch (error) {
         console.error('Login failed', error);
       }
@@ -72,16 +57,14 @@ export const useAuthStore = defineStore('auth', {
     logout() {
       this.token = null;
       this.user = null;
-      sessionStorage.removeItem('userToken');
-      sessionStorage.removeItem('userId');
     },
 
     async checkAuth() {
-      const token = sessionStorage.getItem('userToken');
+      const token = sessionStorage.getItem('auth'); // Assuming the full state is persisted
       if (token) {
         try {
-          const response = await axiosService.get('user/authentication' );
-          this.user = response.data.user;
+          const { data } = await axiosService.get('user/authentication');
+          this.user = data.user;
           this.token = token;
         } catch (error) {
           this.logout();
@@ -89,5 +72,14 @@ export const useAuthStore = defineStore('auth', {
       }
     },
   },
-  
+
+  persist: {
+    enabled: true,
+    strategies: [
+      {
+        key: 'auth',
+        storage: sessionStorage,
+      },
+    ],
+  },
 });

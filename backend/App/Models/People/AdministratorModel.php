@@ -34,16 +34,14 @@ class AdministratorModel {
 
     // Create a new administrator
     public function create($data) {
-        $salt = $this->generateSalt();
-        $hashedPassword = $this->hashPassword($data['password'], $salt);
-        $query = "INSERT INTO hl_administrators (first_name, last_name, username, password, salt)   
-                  VALUES (:first_name, :last_name, :username, :password, :salt)";
+        $query = "INSERT INTO hl_administrators (first_name, last_name, username, password)   
+                  VALUES (:first_name, :last_name, :username, :password)";
         $params = [
             ':first_name' => $data['first_name'],
             ':last_name' => $data['last_name'],
             ':username' => $data['username'],
-            ':password' => $hashedPassword,
-            ':salt' => $salt // Hash the password
+            ':password' =>  password_hash($data['password'], PASSWORD_DEFAULT) // Hash the password
+           
         ];
         $this->databaseService->executeUpdate($query, $params);
         $this->id = $this->databaseService->getLastInsertId();
@@ -51,27 +49,35 @@ class AdministratorModel {
    
     // Update administrator details
     public function update() {
-        $sql = "UPDATE hl_administrators SET first_name = :first_name, last_name = :last_name, username = :username, password = :password WHERE id = :id";
-        $stmt = $this->db->prepare($sql);
-
-        // Bind parameters
-        $stmt->bindParam(':id', $this->id);
-        $stmt->bindParam(':first_name', $this->first_name);
-        $stmt->bindParam(':last_name', $this->last_name);
-        $stmt->bindParam(':username', $this->username);
-        $stmt->bindParam(':password', password_hash($this->password, PASSWORD_DEFAULT)); // Hash the password
-
-        return $stmt->execute();
+        $query = "UPDATE hl_administrators 
+                SET first_name = :first_name, 
+                    last_name = :last_name, 
+                    username = :username, 
+                    password = :password 
+                WHERE id = :id";
+        
+        $params = [
+            ':id' => $this->id,
+            ':first_name' => $this->first_name,
+            ':last_name' => $this->last_name,
+            ':username' => $this->username,
+            ':password' => password_hash($this->password, PASSWORD_DEFAULT) // Hash the password
+        ];
+        
+        return $this->databaseService->executeQuery($query, $params);
     }
+    
 
     // Verify user credentials
     public function verify($username, $password) {
-        $sql = "SELECT * FROM hl_administrators WHERE username = :username";
-        $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':username', $username);
-        $stmt->execute();
-
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        $query = "SELECT * FROM hl_administrators WHERE username = :username";
+        $params = [
+            ':username' => $username
+        ];
+        $results =  $this->databaseService->executeQuery($query, $params);
+        $user = $results->fetch(PDO::FETCH_ASSOC);
+        writeLog('AdministratorModel-verify-79', $user);
+        writeLog('AdministratorModel-verify-80', $password);
 
         if ($user && password_verify($password, $user['password'])) {
             // Populate object with user data
@@ -80,25 +86,14 @@ class AdministratorModel {
             $this->last_name = $user['last_name'];
             $this->username = $user['username'];
             $this->password = $user['password'];
-            $this->time_created = $user['time_created'];
-            return true;
+            writeLog('AdministratorModel-verify-89', TRUE);
+            return $this->id;
         }
+        else{
+            writeLog('AdministratorModel-verify-93', FALSE); 
+            return 'FALSE';   
 
-        return false;
-    }
-     // Generate a random salt
-     private function generateSalt($length = 16) {
-        return bin2hex(random_bytes($length));
-    }
-
-    // Hash a password with a given salt
-    private function hashPassword($password, $salt) {
-        return hash('sha256', $password . $salt);
-    }
-
-    // Verify a password against a hash and salt
-    private function verifyPassword($password, $hashedPassword, $salt) {
-        return hash('sha256', $password . $salt) === $hashedPassword;
+        }
     }
     public function getId() {
         return $this->id;

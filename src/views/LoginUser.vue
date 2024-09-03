@@ -43,12 +43,15 @@
 </template>
 
 <script>
+import { useRouter, useRoute } from 'vue-router';
 import { ref, onMounted } from 'vue';
 import { useAuthStore } from '@/stores/AuthStore';
 
 export default {
   setup() {
     const authStore = useAuthStore();
+    const router = useRouter();
+    const route = useRoute();
     const registerData = ref({
       first_name: '',
       last_name: '',
@@ -72,7 +75,12 @@ export default {
 
     const handleLogin = async () => {
       try {
-        await authStore.login(loginData.value);
+        const response = await authStore.login(loginData.value);
+        console.log
+        if (response == 'Success') {
+          // Redirect to the dashboard after successful login
+          router.push('/email/series/any/1');
+        }
       } catch (error) {
         console.error('Login failed:', error);
       }

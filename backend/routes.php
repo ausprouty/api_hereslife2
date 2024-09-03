@@ -1,8 +1,7 @@
 <?php
 require_once __DIR__ .'/router.php';
 
-writeLog('routes-3', 'I entered routes.php');
-writeLog('routes-4', $postData);
+
 $path = PATH;
 //error_log ($path . 'spirit/titles');
 get($path, '/App/Views/indexLocal.php');

@@ -18,32 +18,59 @@
   
   <script>
   export default {
-    data() {
-      return {
-        categories: [
-          {
-            name: 'Emails',
-            items: ['Email 1', 'Email 2', 'Email 3', 'Email 4', 'Email 5']
-          },
-          {
-            name: 'Materials',
-            items: ['Material 1', 'Material 2', 'Material 3', 'Material 4', 'Material 5']
-          },
-          {
-            name: 'People',
-            items: ['Person 1', 'Person 2', 'Person 3', 'Person 4', 'Person 5']
-          },
-          {
-            name: 'Reports',
-            items: ['Report 1', 'Report 2', 'Report 3', 'Report 4', 'Report 5']
-          }
-        ]
-      };
-    }
-  };
+   
+  data() {
+    return {
+      categories: [
+        {
+          name: 'Emails',
+          items: [
+            { title: 'Series Editor', path: '/email/series/' },
+            { title: 'Send Que', path: '/email/que' },
+            { title: 'Send Direct', path: '/email/direct/' },
+            { title: 'Email 4', path: '/emails/4' },
+            { title: 'Email 5', path: '/emails/5' }
+          ]
+        },
+        {
+          name: 'Materials',
+          items: [
+            { title: 'Material 1', path: '/materials/1' },
+            { title: 'Material 2', path: '/materials/2' },
+            { title: 'Material 3', path: '/materials/3' },
+            { title: 'Material 4', path: '/materials/4' },
+            { title: 'Material 5', path: '/materials/5' }
+          ]
+        },
+        {
+          name: 'People',
+          items: [
+            { title: 'Person 1', path: '/people/1' },
+            { title: 'Person 2', path: '/people/2' },
+            { title: 'Person 3', path: '/people/3' },
+            { title: 'Person 4', path: '/people/4' },
+            { title: 'Person 5', path: '/people/5' }
+          ]
+        },
+        {
+          name: 'Reports',
+          items: [
+            { title: 'Report 1', path: '/reports/1' },
+            { title: 'Report 2', path: '/reports/2' },
+            { title: 'Report 3', path: '/reports/3' },
+            { title: 'Report 4', path: '/reports/4' },
+            { title: 'Report 5', path: '/reports/5' }
+          ]
+        }
+      ]
+    };
+  }
+};
+
+
   </script>
   
-  <style scoped>
+
  
  <style scoped>
 body {
