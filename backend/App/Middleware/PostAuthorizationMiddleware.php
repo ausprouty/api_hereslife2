@@ -13,10 +13,12 @@ class PostAuthorizationMiddleware {
         $postInputController = null; 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Clean input data
+            writeLog('PostAuthorizationMiddleware-7', $_POST);
             $sanitizeInputService = new SanitizeInputService();
             $postInputController = new PostInputController($sanitizeInputService);
             // Check if the request is authorized
-            $authorized = AuthorizationService::checkApiKey($postInputController->getApiKey());
+            writeLog('PostAuthorizationMiddleware-20', $postInputController->getDataSet());
+            $authorized = AuthorizationService::checkAuthorizationHeader();
             if (!$authorized) {
                 error_log('not authorized');
                 http_response_code(401);

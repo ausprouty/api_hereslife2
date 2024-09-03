@@ -15,7 +15,7 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     async checkIfAdministratorExists() {
       try {
-        const response = await axiosService.get('admin/exists');
+        const response = await axiosService.get('admin/exists',{ skipUserId: true });
         console.log (response)
         if (response.data.data == 'TRUE'){
           console.log('admin exists');
@@ -35,13 +35,21 @@ export const useAuthStore = defineStore('auth', {
 
     async register(userData) {
       try {
-        const response = await axiosService.post('admin/create', userData);
-        this.token = response.data.token;
-        this.user = response.data.user;
-        this.administratorExists = true;
-        // Optionally, store token in localStorage
-        localStorage.setItem('authToken', this.token);
-  
+        console.log(userData);
+        const response = await axiosService.post('admin/create', userData,{ skipUserId: true });
+        if (response.message == 'success'){
+          console.log('admin created successfully');
+          this.token = response.data.token;
+          this.user = response.data.user;
+          this.administratorExists = true;
+          // Optionally, store token in sessionStorage
+          sessionStorage.setItem('userToken', this.token);
+          sessionStorage.setItem('userId', this.user);
+        }
+        else{
+          alert('Administrator not created. Reprogramming required');
+          this.administratorExists = false;
+        }
       } catch (error) {
         console.error('Registration failed', error);
       }
@@ -50,11 +58,12 @@ export const useAuthStore = defineStore('auth', {
     async login(credentials) {
       try {
         console.log(credentials);
-        const response = await axiosService.post('admin/login', credentials);
+        const response = await axiosService.post('admin/login', credentials,{ skipUserId: true });
         this.token = response.data.token;
         this.user = response.data.user;
-        // Optionally, store token in localStorage
-        localStorage.setItem('authToken', this.token);
+        // Optionally, store token in sessionStorage
+        sessionStorage.setItem('userToken', this.token);
+        sessionStorage.setItem('userId', this.user);
       } catch (error) {
         console.error('Login failed', error);
       }
@@ -63,18 +72,15 @@ export const useAuthStore = defineStore('auth', {
     logout() {
       this.token = null;
       this.user = null;
-      localStorage.removeItem('authToken');
+      sessionStorage.removeItem('userToken');
+      sessionStorage.removeItem('userId');
     },
 
     async checkAuth() {
-      const token = localStorage.getItem('authToken');
+      const token = sessionStorage.getItem('userToken');
       if (token) {
         try {
-          const response = await axiosService.get('user/authentication', {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
+          const response = await axiosService.get('user/authentication' );
           this.user = response.data.user;
           this.token = token;
         } catch (error) {

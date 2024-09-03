@@ -38,6 +38,16 @@ class AuthorizationService
             return null;
         }
     }
+    public static function checkAuthorizationHeader(): bool
+    {
+        $headers = getallheaders();
+        if (!isset($headers['Authorization'])) {
+            return false;
+        }
+        $authHeader = $headers['Authorization'];
+        $apiKey = str_replace('Bearer ', '', $authHeader);
+        return self::checkApiKey($apiKey);
+    }
 
     public static function checkApiKey($apiKey): bool
     {

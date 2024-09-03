@@ -1,11 +1,10 @@
 <?php
 
-
 // Instantiate the required services
 use App\Services\AuthorizationService;
 use App\Models\People\AdministratorModel;
 use App\Services\DatabaseService;
-
+writeLog('AdimnCreate-7', $postData);
 $databaseService = new DatabaseService('standard');
 // Create a new administrator
 $administratorModel = new AdministratorModel($databaseService);

@@ -1,4 +1,16 @@
 // src/services/axiosService.js
+
+/*
+Example request without userId
+axiosInstance.get('/login', { skipUserId: true });
+
+Example request with userId automatically appended
+axiosInstance.get('/profile');
+
+This will automatically append the userId to the URL, like this:
+?u=12345
+*/
+
 import axios from 'axios';
 
 const apiUrl = import.meta.env.VITE_APP_API_URL;
@@ -8,18 +20,26 @@ const axiosInstance = axios.create({
 });
 
 axiosInstance.interceptors.request.use(config => {
-  const envToken = import.meta.env.VITE_APP_HL_API_KEY;
-  const localStorageToken = localStorage.getItem('auth_token');
+  const siteToken = import.meta.env.VITE_APP_HL_API_KEY;
+  const userToken = sessionStorage.getItem('userToken');
+  const userId = sessionStorage.getItem('userId');
   
-  if (envToken) {
-    config.headers['Site-Authorization'] = `Bearer ${envToken}`;
+  if (siteToken) {
+    config.headers['Authorization'] = `Bearer ${siteToken}`;
   }
   
-  if (localStorageToken) {
-    config.headers['User-Authorization'] = `Bearer ${localStorageToken}`;
+  if (userToken) {
+    config.headers['User-Authorization'] = `Bearer ${userToken}`;
   }
-   // Log the modified config object after setting headers
-   console.log('Modified Axios Request Config:', config);
+  // Append userId as a query parameter `u` if:
+  // 1. The userId exists.
+  // 2. The request config does not have a `skipUserId` flag set to true.
+  if (userId && !config.skipUserId) {
+    config.params = config.params || {};
+    config.params['u'] = userId;
+  }
+
+  console.log('Modified Axios Request Config:', config);
   return config;
 }, error => {
   return Promise.reject(error);

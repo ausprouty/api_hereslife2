@@ -18,7 +18,7 @@ if ($_SERVER['SERVER_NAME'] === 'localhost') {
 // Include necessary files
 require_once __DIR__ . '/App/Configuration/my-autoload.inc.php';
 require_once __DIR__ . '/Vendor/autoload.php';
-
+use App\Controllers\PostInputController;
 use App\Middleware\PreflightMiddleware;
 use App\Middleware\PostAuthorizationMiddleware;
 use App\Middleware\CORSMiddleware;
@@ -26,23 +26,36 @@ use App\Middleware\FinalMiddleware;
 
 // Middleware stack function to handle the middleware flow
 function applyMiddleware($middlewares, $request) {
+    // Initialize with null to indicate no PostInputController yet
     $postInputController = null;
+    
+    // Define the next function to process the middleware stack
     $next = function($request, $postInputController) use (&$middlewares, &$next) {
+        // Check if there are no more middlewares to process
         if (empty($middlewares)) {
-            return $postInputController; // Return the PostInputController when no more middleware
+            // Return the PostInputController, whether null or an instance
+            return $postInputController;
         }
+        
+        // Get the next middleware in the stack
         $middleware = array_shift($middlewares);
+        
+        // Process the middleware, passing the request and the controller
         return $middleware->handle($request, function($request, $newPostInputController = null) use ($next, $postInputController) {
-            // If a new PostInputController is provided, update the reference
-            $postInputController = $newPostInputController ?: $postInputController;
+            // If the middleware returned a new PostInputController, use it
+            if ($newPostInputController instanceof PostInputController) {
+                $postInputController = $newPostInputController;
+            }
+            // Continue to the next middleware
             return $next($request, $postInputController);
         });
     };
     
+    // Start the middleware processing chain
     return $next($request, $postInputController);
 }
 
-// Define the middleware stack
+// Define and apply the middleware stack
 $middlewares = [
     new PreflightMiddleware(),
     new CORSMiddleware(),
@@ -50,17 +63,17 @@ $middlewares = [
     new FinalMiddleware()
 ];
 
-// Apply the middleware stack and capture the PostInputController
+// Apply the middleware stack and retrieve the PostInputController
 $postInputController = applyMiddleware($middlewares, $_SERVER);
 
-// Pass the PostInputController to routes.php
-if ($postInputController !== null) {
-    // Use the sanitized data within routes.php
+// Check if PostInputController was successfully created and passed
+if ($postInputController instanceof PostInputController) {
+    // Use the sanitized data from the PostInputController
     $postData = $postInputController->getDataSet();
-    // Pass the data to your routing logic as needed
-}
-else{
+} else {
+    // Handle the case where no PostInputController was created
     $postData = null;
 }
+
 // Main application logic or routing
 require_once __DIR__ . '/routes.php';
