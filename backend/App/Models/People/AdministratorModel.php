@@ -22,7 +22,6 @@ class AdministratorModel {
         $query = "SELECT count(*) as cnt FROM hl_administrators";
         $result = $this->databaseService->executeQuery($query);
         $data = $result->fetch(PDO::FETCH_ASSOC);
-        writeLog('adminExists-25', $data);
         // Assuming executeQuery returns a result set
         if ($data) {
             if ($data['cnt'] >0){

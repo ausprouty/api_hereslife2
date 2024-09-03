@@ -10,7 +10,7 @@ class PostAuthorizationMiddleware {
     public function handle($request, $next) {
     
             // Check if the request method is POST
-        $postInputController = null; 
+        $postInputController = std_object();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Clean input data
             writeLog('PostAuthorizationMiddleware-7', $_POST);
@@ -25,7 +25,8 @@ class PostAuthorizationMiddleware {
                 return 'not authorized';
             }
         }
-
+        writeLog('PostAuthorizationMiddleware-28', $postInputController->getDataSet());
+        writeLog('PostAuthorizationMiddleware-passing', $postInputController);
         // Pass the $postInputController to the next step in the pipeline
         return $next($request, $postInputController);
     }
