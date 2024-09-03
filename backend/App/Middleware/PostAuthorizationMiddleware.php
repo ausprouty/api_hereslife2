@@ -7,10 +7,11 @@ use App\Controllers\Data\PostInputController;
 use App\Services\AuthorizationService;
 
 class PostAuthorizationMiddleware {
-    public function handle($request, $next) {
+
+    static public function getDataSet() {
     
             // Check if the request method is POST
-        $postInputController = std_object();
+        $dataSet = [];
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Clean input data
             writeLog('PostAuthorizationMiddleware-7', $_POST);
@@ -24,10 +25,8 @@ class PostAuthorizationMiddleware {
                 http_response_code(401);
                 return 'not authorized';
             }
+            $dataSet = $postInputController->getDataSet();
         }
-        writeLog('PostAuthorizationMiddleware-28', $postInputController->getDataSet());
-        writeLog('PostAuthorizationMiddleware-passing', $postInputController);
-        // Pass the $postInputController to the next step in the pipeline
-        return $next($request, $postInputController);
+        return $dataSet;
     }
 }

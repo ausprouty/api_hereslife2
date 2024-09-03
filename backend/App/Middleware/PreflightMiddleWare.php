@@ -4,12 +4,12 @@ Namespace App\Middleware;
 
 class PreflightMiddleware {
     public function handle($request, $next) {
-        writeLog('PreflightMiddleware-7', 'I am in PreflightMiddleware');
+
         // Fetch accepted origins from .env
         $acceptedOrigins = explode(',', ACCEPTED_ORIGINS);
-        writeLog('PreflightMiddleware-10', $acceptedOrigins);   
+      
         if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-            writeLog('PreflightMiddleware-12', $_SERVER['HTTP_ORIGIN']);
+
             if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $acceptedOrigins)) {
                 error_log('PreflightMiddleware-18: Origin allowed: ' . $_SERVER['HTTP_ORIGIN']);
                 header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
