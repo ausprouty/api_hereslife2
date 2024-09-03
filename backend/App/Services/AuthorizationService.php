@@ -38,6 +38,21 @@ class AuthorizationService
             return null;
         }
     }
+
+    public function checkAuthorizationUser(): bool
+    {
+        $headers = getallheaders();
+        if (!isset($headers['User-Authorization'])) {
+            return false;
+        }
+        $authHeader = $headers['User-Authorization'];
+        $jwt = str_replace('Bearer ', '', $authHeader);
+        $decoded = $this->verifyJWT($jwt);
+        if (!$decoded) {
+            return false;
+        }
+        return $decoded['auth_level'] === 'admin';
+    }   
     public static function checkAuthorizationHeader(): bool
     {
         $headers = getallheaders();

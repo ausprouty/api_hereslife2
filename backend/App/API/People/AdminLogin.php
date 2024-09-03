@@ -4,14 +4,15 @@
 use App\Services\AuthorizationService;
 use App\Models\People\AdministratorModel;
 use App\Services\DatabaseService;
+use App\Utilities\ErrorHandler;
 
-writeLog('AdminLogin-7', $postData);
+// set the database to be used
 $databaseService = new DatabaseService('standard');
 $administratorModel = new AdministratorModel($databaseService);
-
+// verify the user
 $userId = $administratorModel->verify($postData['username'], $postData['password']);  
 if ($userId == 'FALSE') {
-    notAuthorized();
+    ErrorHandler::handle('Not Authorized', 'Please re-enter your username and password');
 }
 $jwtService = new AuthorizationService();
 $token = $jwtService->generateJWT($userId, 'admin');
@@ -24,15 +25,7 @@ header('Content-Type: application/json');
 writeLog('AdimnCreate-21', $data);
 echo json_encode($data);
 
-function notAuthorized() {
-    $data = [
-        'success' => 'FALSE',
-        'message' => 'Invalid username or password',
-    ];
-    header('Content-Type: application/json');
-    echo json_encode($data);
-    exit;
-}
+
 
 
 

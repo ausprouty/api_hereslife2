@@ -63,24 +63,12 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import axios from 'axios';
+import axiosService from '@/services/axiosService';
 import Editor from '@tinymce/tinymce-vue';
 
-const props = defineProps({
-  series: {
-    type: String,
-    default: '',
-  },
-  sequence: {
-    type: Number,
-    default: 1,
-  },
-});
-
-const hlApiKey = import.meta.env.VITE_APP_HL_API_KEY;
-const tinyMCEApiKey = import.meta.env.VITE_APP_TINYCME_API_KEY
+const tinyMCEApiKey = import.meta.env.VITE_APP_TINYCME_API_KEY;
 const route = useRoute();
 const apiUrl = import.meta.env.VITE_APP_API_URL;
 const imageUploadUrl = `${apiUrl}email/images/upload/tinymce`;
@@ -96,7 +84,7 @@ const email = ref({
 const loading = ref(false);
 const isEdit = ref(false);
 
-const editorConfig = ref({
+const editorConfig = {
   height: 500,
   width: '100%',
   menubar: true,
@@ -106,7 +94,7 @@ const editorConfig = ref({
   images_upload_credentials: true,
   images_upload_url: imageUploadUrl,
   images_upload_handler: handleImageUpload,
-});
+};
 
 function handleImageUpload(blobInfo) {
   return new Promise((resolve, reject) => {
@@ -134,8 +122,6 @@ function handleImageUpload(blobInfo) {
     xhr.onerror = () => {
       reject(`Image upload failed due to a XHR Transport error. Code: ${xhr.status}`);
     };
-
-    formData.append('apiKey', hlApiKey);
     formData.append('file', blobInfo.blob());
 
     xhr.send(formData);
@@ -149,23 +135,33 @@ const initializeEmail = () => {
 
 const loadOrCreateEmail = async () => {
   loading.value = true;
+  
   try {
     const { series, sequence } = email.value;
-    if (series && sequence) {
-      const response = await axios.get(`${apiUrl}email/series/${series}/${sequence}`);
-      if (response.data.data) {
-        email.value = { ...response.data.data };
-        isEdit.value = true;
-      } else {
-        email.value.subject = '';
-        email.value.body = '';
-        isEdit.value = false;
-      }
-    } else {
+
+    if (!series || !sequence) {
       alert('Please enter a valid series and sequence.');
+      return;
     }
+
+    const { data } = await axiosService.get(`email/series/${series}/${sequence}`, {
+      params: { skipUserId: true }
+    });
+
+    if (data?.data) {
+      email.value = { ...data.data };
+      isEdit.value = true;
+    } else {
+      email.value = {
+        subject: '',
+        body: ''
+      };
+      isEdit.value = false;
+    }
+
   } catch (error) {
-    console.error('Failed to load or create email:', error);
+    console.error('Failed to load or create email:', error.message);
+    // Optionally, handle the error with a user notification
   } finally {
     loading.value = false;
   }
@@ -174,12 +170,11 @@ const loadOrCreateEmail = async () => {
 const saveEmail = async () => {
   try {
     loading.value = true;
-    const data = {
+    const formData = {
       action: isEdit.value ? 'update' : 'create',
       data: email.value,
     };
-    data.data.apiKey = apiKey;
-    await axios.post(`${apiUrl}email/series`, data);
+    await axiosService.post('email/series', formData);
 
     email.value = {
       subject: '',
@@ -189,7 +184,7 @@ const saveEmail = async () => {
     };
     isEdit.value = false;
   } catch (error) {
-    console.error('Failed to save email:', error);
+    console.error('Failed to save email:', error.message);
   } finally {
     loading.value = false;
   }
@@ -203,12 +198,8 @@ onMounted(() => {
 });
 
 watch(route, initializeEmail);
-
-onBeforeUnmount(() => {
-  console.log("TinyMCE component will unmount");
-});
 </script>
 
 <style scoped>
-
+/* Add your scoped styles here */
 </style>

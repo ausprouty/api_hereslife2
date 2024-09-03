@@ -1,22 +1,22 @@
 <template>
-    <nav class="navbar">
-      <div class="logo">
-        <img src="@/assets/logo.png" alt="Logo">
-      </div>
-      <ul class="menu">
-        <li class="menu-item" v-for="(category, index) in categories" :key="index">
-          <a href="#">{{ category.name }}</a>
-          <ul class="dropdown">
-            <li v-for="(item, i) in category.items" :key="i">
-              <a href="#">{{ item }}</a>
-            </li>
-          </ul>
-        </li>
-      </ul>
-    </nav>
-  </template>
+  <nav class="navbar">
+    <div class="logo">
+      <img src="@/assets/logo.png" alt="Logo">
+    </div>
+    <ul class="menu">
+      <li class="menu-item" v-for="(category, index) in categories" :key="index">
+        <a href="#">{{ category.name }}</a>
+        <ul class="dropdown">
+          <li v-for="(item, i) in category.items" :key="i">
+            <a :href="item.path">{{ item.title }}</a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+</template>
   
-  <script>
+<script>
   export default {
    
   data() {
@@ -25,7 +25,7 @@
         {
           name: 'Emails',
           items: [
-            { title: 'Series Editor', path: '/email/series/' },
+            { title: 'Series Editor', path: '/email/series/any/1' },
             { title: 'Send Que', path: '/email/que' },
             { title: 'Send Direct', path: '/email/direct/' },
             { title: 'Email 4', path: '/emails/4' },
@@ -157,3 +157,120 @@ body {
 </style>
 
 
+<style scoped>
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  background-color: #f4f4f4;
+  padding: 10px 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.logo img {
+  max-height: 40px;
+}
+
+.menu {
+  list-style-type: none;
+  display: flex;
+  margin: 0;
+  padding: 0;
+  margin-left: auto;
+}
+
+.menu-item {
+  position: relative;
+  margin-right: 20px;
+}
+
+.menu-item a {
+  color: #3f5864;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 10px;
+  display: block;
+}
+
+.menu-item:hover .dropdown {
+  display: block;
+}
+
+.dropdown {
+  display: none;
+  position: absolute;
+  background-color: #f38b3c;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  min-width: 180px;
+  top: 100%;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  transform: translateY(10px);
+}
+
+.menu-item:hover .dropdown {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.dropdown li {
+  border-bottom: 1px solid #ffc700;
+}
+
+.dropdown li:last-child {
+  border-bottom: none;
+}
+
+.dropdown a {
+  color: #3f5864;
+  text-decoration: none;
+  padding: 10px;
+  display: block;
+}
+
+.dropdown a:hover {
+  background-color: #65c058;
+  color: #ffffff;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .menu {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .menu-item {
+    width: 100%;
+  }
+
+  .menu-item a {
+    padding: 15px;
+    text-align: center;
+  }
+
+  .navbar {
+    justify-content: space-between;
+  }
+
+  .navbar .menu {
+    flex-direction: column;
+  }
+
+  .menu-toggle {
+    display: block;
+    cursor: pointer;
+  }
+}
+</style>
