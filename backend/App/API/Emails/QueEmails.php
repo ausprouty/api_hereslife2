@@ -3,24 +3,18 @@
    and expects the following parameters:
         letterId: from hl_email
         groupCode: pass to ChampionEmailAddressService
-        apiKey: for security
+
 */
 
-use App\Controllers\Data\PostInputController;
+
 use App\Controllers\Emails\EmailQueController;
 use App\Models\People\ChampionModel;
-use App\Models\Data\PostInputModel;
-use App\Services\AuthorizationService;
-use App\Services\SanitizeInputService;
-use App\Utilities\ErrorHandler;
+use App\Utilities\RequestValidator;
 
-header('Content-Type: application/json');
 
-if (!$postData){
-    ErrorHandler::handle('No data provided', 'No data provided');   
-}
+// Validate request and authorization
+RequestValidator::validateAdmin($postData, 'QueEmails');
 
-$authorizationService = new AuthorizationService();
 // Get champions matching the group code
 $championModel = new ChampionModel();
 $champions = $championModel->getChampionEmails($data['groupCode']);
@@ -35,5 +29,5 @@ $response = [
     'message' => $result,
 ]; 
 
-
+header('Content-Type: application/json');
 echo json_encode($response);

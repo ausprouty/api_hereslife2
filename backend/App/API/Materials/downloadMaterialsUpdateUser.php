@@ -7,23 +7,14 @@ use App\Controllers\People\ChampionController;
 use App\Models\Materials\DownloadModel;
 use App\Repositories\ChampionRepository;
 use App\Services\UserMaterialService;
+use App\Utilities\RequestValidator;
 
 
-use App\Services\SanitizeInputService;
-use App\Controllers\Data\PostInputController;
-use App\Services\AuthorizationService;
-// clean input data 
-$sanitizeInputService = new SanitizeInputService();
-$postInputController = new PostInputController(
-    $sanitizeInputService
-);
-// check if the request is authorized
-$authorized = AuthorizationService::checkApiKey($postInputController->getApiKey());
-if (!$authorized){
-    error_log('not authorized');
-    http_response_code(401);
-    return 'not authorized';
-}
+// arrives with $postData
+
+// Validate request and authorization
+$apiKey = $postInputController->getApiKey();
+RequestValidator::validateUser($postData, $apiKey, 'DownloadMaterialsUpdateUser');
 
 
 // Initialize dependencies for DownloadModel

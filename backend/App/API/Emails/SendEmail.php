@@ -1,21 +1,12 @@
 <?php
-use App\Controllers\Data\PostInputController;
-use App\Controllers\Emails\EmailController;
-use App\Services\SanitizeInputService;
+
 use App\Services\EmailServices\Smtp2go\Smtp2GoMailerService;
-use App\Utilities\ErrorHandler;
+use App\Utilities\RequestValidator;
+
+// Validate request and authorization
+RequestValidator::validateAdmin($postData, 'SendEmail');
 
 $autoloaders = spl_autoload_functions();
-
-// only authenticated users can update the email series
-if (!$postData) { 
-    ErrorHandler::handle('No data provided', 'No post data provided in SendEmail');
-} 
-$authorizationService = new AuthorizationService();
-$authorized = $authorizationService->checkAuthorizationUser();
-if (!$authorized) {
-    ErrorHandler::handle('Not Authorized', 'Not authorized in SendEmail');
-}
 
 // set bcc to empty string if not set
 if (!isset($postData['bcc'])) {

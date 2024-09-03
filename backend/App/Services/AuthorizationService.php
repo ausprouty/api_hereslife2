@@ -39,7 +39,7 @@ class AuthorizationService
         }
     }
 
-    public function checkAuthorizationUser(): bool
+    public function checkAuthorizationUserHeader(): bool
     {
         $headers = getallheaders();
         if (!isset($headers['User-Authorization'])) {

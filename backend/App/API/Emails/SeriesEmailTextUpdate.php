@@ -1,19 +1,12 @@
 <?php
 use App\Controllers\Data\PostInputController;
 use App\Controllers\Emails\EmailController;
-use App\Services\AuthorizationService;
-use App\Utilities\ErrorHandler;
+use App\Utilities\RequestValidator;
 
 
-// only authenticated users can update the email series
-if (!$postData) { 
-    ErrorHandler::handle('No data provided', 'No post data provided in SeriesEmailTextUpdate');
-} 
-$authorizationService = new AuthorizationService();
-$authorized = $authorizationService->checkAuthorizationUser();
-if (!$authorized) {
-    ErrorHandler::handle('Not Authorized', 'Not authorized in SeriesEmailTextUpdate');
-}
+
+// Validate request and authorization
+RequestValidator::validateAdmin($postData, 'SeriesEmailTextUpdate');
 
 // Update the email series
 $emailController = new EmailController();
