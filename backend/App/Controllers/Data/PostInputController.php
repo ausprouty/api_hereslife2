@@ -4,16 +4,13 @@ namespace App\Controllers\Data;
 
 use App\Services\SanitizeInputService;
 
-
 class PostInputController
 {
-    private $postInputModel;
-    private $authorizationService;
-    private array $postData; 
-    private array $sanitizedData;
-    // Constructor Injection with type hinting
-    public function __construct(
-        SanitizeInputService $sanitizeInputService)
+    private array $postData = []; // Initialize as an empty array
+    private array $sanitizedData = []; // Initialize as an empty array
+    private $sanitizeInputService;
+
+    public function __construct(SanitizeInputService $sanitizeInputService)
     {
         $this->sanitizeInputService = $sanitizeInputService;
         writeLog('PostInputController-20', 'started');
@@ -22,22 +19,13 @@ class PostInputController
 
     private function handlePost(): array
     {
-        // Detect if the request is a JSON payload or a traditional form submission
-        // VueJS sends JSON payloads
-
-        if ($this->isJsonRequest()) {   // Handle JSON input
+        if ($this->isJsonRequest()) {
             $json = file_get_contents("php://input");
             $data = json_decode($json, true);
-            // most of the time data will be in the 'data' key, 
-            // but sometimes will be in the root.
-            //todo: check if this is the best way to handle this  
-            if (isset($data['data'])) {
-                $this->postData = $data['data'];
-            } else{
-                $this->postData = $data;
-            }
-        } else if (isset($_POST['formData']) && is_array($_POST['formData'])) { 
-            // Handle traditional form submission
+
+            // Assign to postData only if data is not null
+            $this->postData = isset($data['data']) ? $data['data'] : ($data ?? []);
+        } elseif (isset($_POST['formData']) && is_array($_POST['formData'])) {
             $this->postData = [];
             foreach ($_POST['formData'] as $field) {
                 if (isset($field['name']) && isset($field['value'])) {
@@ -45,19 +33,16 @@ class PostInputController
                 }
             }
         } else {
-                // Handle case where no form data is present
-                $response =  $this->handleNoFormData();
-                return $response;
-            
+            // If no form data is present
+            return $this->handleNoFormData();
         }
 
-        // Now you can work with the sanitized data
+        // Sanitize input data
         $this->sanitizedData = $this->sanitizeInputService->sanitize($this->postData);
         return $this->sanitizedData;
-        // Further processing of $sanitizedData...
     }
 
-    public function getDataSet()
+    public function getDataSet(): array
     {
         $data = $this->sanitizedData ?? [];
         if (isset($data['apiKey'])) {
@@ -71,23 +56,18 @@ class PostInputController
         return $this->sanitizedData['apiKey'] ?? null;
     }
 
-    private function isJsonRequest()
+    private function isJsonRequest(): bool
     {
-        // Check if the Content-Type header indicates a JSON request
         return isset($_SERVER['CONTENT_TYPE']) && strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false;
     }
 
-    private function handleNoFormData()
+    private function handleNoFormData(): array
     {
-        // Handle the situation when formData is not present
-        $response =  array('success'=>false,'message'=>"No form data provided.");
-        return $response;    }
+        return ['success' => false, 'message' => "No form data provided."];
+    }
 
-    private function handleMissingData()
+    private function handleMissingData(): array
     {
-        // Handle the situation when JSON data is missing or malformed
-        $response =  array('success'=>false,'message'=>"Malformed JSON data.");
-        return $response;
-        // You can add more logic here as needed, such as logging or returning an error response.
+        return ['success' => false, 'message' => "Malformed JSON data."];
     }
 }

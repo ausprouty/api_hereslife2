@@ -8,9 +8,8 @@ use PDO;
 class TractController {
     private $databaseService;
 
-    public function __construct($database = 'standard') {
-        writeLog('TractController-15', 'database: ' . $database);
-        $this->databaseService = new DatabaseService($database);
+    public function __construct(DatabaseService $databaseService) {
+        $this->databaseService = $databaseService;
     }
     public function getTractsToView() {
         $query = "SELECT lang1 FROM hl_materials

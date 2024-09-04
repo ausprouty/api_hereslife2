@@ -1,6 +1,8 @@
 start local server on right
 
- php Vendor/phpunit/phpunit/phpunit
+ php Vendor/phpunit/phpunit/phpunit  Tests/Controllers/SpiritControllerTest.php
+
+ vendor/bin/phpunit tests/SpiritControllerTest.php
 
 http://localhost/api_hereslife/backend/spirit/titles works
 
