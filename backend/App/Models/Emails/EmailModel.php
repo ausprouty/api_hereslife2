@@ -8,8 +8,10 @@ class EmailModel {
 
     private $databaseService;
 
-    public function __construct($database = 'standard') {  
-        $this->databaseService = new DatabaseService($database);
+    // Inject DatabaseService via the constructor
+    public function __construct(DatabaseService $databaseService)
+    {
+        $this->databaseService = $databaseService;
     }
     
     public function create($data) {

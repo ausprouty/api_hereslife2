@@ -8,8 +8,14 @@ class MaterialController {
 
     private $model;
 
-    public function __construct() {
-        $this->model = new MaterialModel();
+  /**
+     * Constructor that injects MaterialModel via dependency injection.
+     *
+     * @param MaterialModel $model The material model to use for operations.
+     */
+    public function __construct(MaterialModel $model)
+    {
+        $this->model = $model;
     }
     public function getIdByFileName($fileName) {
         try {

@@ -7,6 +7,7 @@ use App\Services\DatabaseService;
 class DownloadModel {
 
     private $databaseService;
+
     public $id;
     public $champion_id;
     public $file_name;
@@ -18,15 +19,15 @@ class DownloadModel {
     public $tip;
     public $tip_detail;
 
-    public function __construct($database) {
-        writeLog('DownloadModel-15', 'database: ' . $database);
-        $this->databaseService = new DatabaseService($database);
+    public function __construct(DatabaseService $databaseService) {
+        $this->databaseService = $databaseService;
     }
+
     public function setValues(array $params) {
         $this->id = $params['id'] ?? null;
         $this->champion_id = $params['champion_id'] ?? null;
         $this->file_name = $params['file_name'] ?? null;
-        $this->download_date = $params['download_date'] ?? time(); // Default to current timestamp
+        $this->download_date = $params['download_date'] ?? time();
         $this->requested_tips = $params['requested_tips'] ?? null;
         $this->sent_tips = $params['sent_tips'] ?? null;
         $this->file_id = $params['file_id'] ?? 0;
@@ -58,11 +59,12 @@ class DownloadModel {
             ':elapsed_months' => $this->elapsed_months,
             ':tip' => $this->tip,
             ':tip_detail' => $this->tip_detail,
-            ':id' => $this->id // Ensure $this->id is set for the update
+            ':id' => $this->id
         );
-        // Execute the query
-        $this->databaseService->executeQuery($query, $params);
+        // Execute the query and return the result
+        return $this->databaseService->executeQuery($query, $params);
     }
+
     public function insert() {
         $query = "INSERT INTO hl_downloads 
                   (champion_id, file_name, download_date, requested_tips, sent_tips, file_id, elapsed_months, tip, tip_detail)
@@ -80,10 +82,10 @@ class DownloadModel {
             ':tip' => $this->tip,
             ':tip_detail' => $this->tip_detail
         );
-        writeLog('download insert query', $params);
-         // Execute the query
-         $this->databaseService->executeQuery($query, $params);
+        // Execute the query and return the result
+        return $this->databaseService->executeQuery($query, $params);
     }
+
     // Getters
     public function getId() { return $this->id; }
     public function getChampionId() { return $this->champion_id; }
@@ -97,4 +99,3 @@ class DownloadModel {
     public function getTipDetail() { return $this->tip_detail; }
 }
 
-?>

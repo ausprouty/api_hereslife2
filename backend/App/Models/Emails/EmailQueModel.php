@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models\Emails;
+
 use App\Services\DatabaseService;
 use PDO;
 
@@ -21,11 +22,18 @@ class EmailQueModel {
     private $template;
     private $params;
 
-    public function __construct(string $database, array $params = []) {
-        writeLog('EmailQueModel-15', 'database: ' . $database);
-        $this->databaseService = new DatabaseService($database);
+    /**
+     * Constructor that injects DatabaseService via dependency injection.
+     *
+     * @param DatabaseService $databaseService
+     * @param array $params Optional parameters for initialization.
+     */
+    public function __construct(DatabaseService $databaseService, array $params = []) {
+        $this->databaseService = $databaseService;
+        $this->create($params);  // Initialize with optional parameters if provided
     }
-    public function create($params){
+
+    public function create($params) {
         $defaults = [
             'id' => null,
             'delay_until' => 0,
@@ -50,6 +58,7 @@ class EmailQueModel {
             }
         }
     }
+
     public function save() {
         $query = "INSERT INTO hl_email_que 
                   (delay_until, email_from, email_to, email_id, champion_id, subject, body, plain_text_only, headers, plain_text_body, template, params) 
@@ -73,8 +82,9 @@ class EmailQueModel {
     
         return $this->databaseService->executeUpdate($query, $params);
     }
+
     public function update() {
-        $query = "UPDATE hhl_email_que 
+        $query = "UPDATE hl_email_que 
                   SET delay_until = :delay_until, 
                       email_from = :email_from, 
                       email_to = :email_to, 
@@ -107,24 +117,28 @@ class EmailQueModel {
     
         return $this->databaseService->executeUpdate($query, $params);
     }
+
     public function delete() {
         $query = "DELETE FROM hl_email_que WHERE id = :id";
         $params = [':id' => $this->id];
         return $this->databaseService->executeUpdate($query, $params);
-    }   
-    public function queEmails($champions, $letterId){
+    }
+
+    public function queEmails($champions, $letterId) {
         $count = 0;
         foreach ($champions as $champion) {
             $count++;
             $params = array(
                 'champion_id' => $champion['cid'],
-                'email_id' => $letterId);
+                'email_id' => $letterId
+            );
             $this->create($params);
             $this->save();
         }
-        return $count .' emails qued';
+        return $count . ' emails qued';
     }
-    // Getters
+
+    // Getters for properties
     public function getId() { return $this->id; }
     public function getDelayUntil() { return $this->delay_until; }
     public function getEmailFrom() { return $this->email_from; }
@@ -139,5 +153,3 @@ class EmailQueModel {
     public function getTemplate() { return $this->template; }
     public function getParams() { return $this->params; }
 }
-
-?>
