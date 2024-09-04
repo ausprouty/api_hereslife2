@@ -16,7 +16,7 @@ if ($_SERVER['SERVER_NAME'] === 'localhost') {
 }
 
 // Include necessary files
-require_once __DIR__ . '/App/Configuration/my-autoload.inc.php';
+require_once __DIR__ . '/App/Configuration/MyAutoload.php';
 require_once __DIR__ . '/Vendor/autoload.php';
 use App\Controllers\PostInputController;
 use App\Middleware\PreflightMiddleware;
