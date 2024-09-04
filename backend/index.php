@@ -5,7 +5,7 @@
 require_once __DIR__ . '/App/Configuration/config.php'; // Load environment-specific config
 
 // Load Debugging tools
-require_once __DIR__ . '/App/Includes/writeLog.php'; 
+require_once __DIR__ . '/App/Services/Debugging.php'; 
 // Error reporting based on environment
 if ($_SERVER['SERVER_NAME'] === 'localhost') {
     error_reporting(E_ALL);
@@ -16,7 +16,7 @@ if ($_SERVER['SERVER_NAME'] === 'localhost') {
 }
 
 // Include necessary files
-require_once __DIR__ . '/App/Configuration/MyAutoload.php';
+
 require_once __DIR__ . '/Vendor/autoload.php';
 use App\Controllers\PostInputController;
 use App\Middleware\PreflightMiddleware;

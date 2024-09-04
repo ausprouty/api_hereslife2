@@ -7,16 +7,23 @@ class CORSMiddleware {
         // Fetch accepted origins from .env
         $acceptedOrigins = explode(',', ACCEPTED_ORIGINS);
    
+        // Check if the request has an Origin header
+        if (isset($_SERVER['HTTP_ORIGIN'])) {
+            $origin = $_SERVER['HTTP_ORIGIN'];
 
-        // Check if the request origin is in the list of accepted origins
-        if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $acceptedOrigins)) {
-            header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
-            header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
-            header("Access-Control-Allow-Headers: Content-Type, Authorization");
-            header("Access-Control-Allow-Credentials: true");
-            writeLog('CORSMiddleware-12', 'I set the headers for allowed origin: ' . $_SERVER['HTTP_ORIGIN']);
+            // Check if the request origin is in the list of accepted origins
+            if (in_array($origin, $acceptedOrigins)) {
+                header('Access-Control-Allow-Origin: ' . $origin);
+                header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+                header("Access-Control-Allow-Headers: Content-Type, Authorization");
+                header("Access-Control-Allow-Credentials: true");
+                writeLog('CORSMiddleware-12', 'I set the headers for allowed origin: ' . $origin);
+            } else {
+                writeLogError('CORSMiddleware-12', 'Origin not allowed: ' . $origin);
+            }
         } else {
-            writeLog('CORSMiddleware-12', 'Origin not allowed: ' . $_SERVER['HTTP_ORIGIN']);
+            // Handle requests without an Origin header (e.g., non-CORS requests)
+            writeLogError('CORSMiddleware-12', 'No Origin header present in the request.');
         }
 
         // Proceed to the next middleware or application logic

@@ -1,5 +1,7 @@
 start local server on right
 
+ php Vendor/phpunit/phpunit/phpunit
 
 http://localhost/api_hereslife/backend/spirit/titles works
+
 

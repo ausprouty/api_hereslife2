@@ -10,6 +10,7 @@
     "build-remote2": "vite build --mode production",
     "preview": "vite preview"
   },
+
   "dependencies": {
     "@ckeditor/ckeditor5-build-classic": "^42.0.2",
     "@ckeditor/ckeditor5-source-editing": "^42.0.2",

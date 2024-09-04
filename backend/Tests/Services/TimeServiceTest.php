@@ -3,6 +3,8 @@
 namespace Tests\Services;
 
 use PHPUnit\Framework\TestCase;
+use App\Services\TimeService;
+use RuntimeException;
 
 class TimeServiceTest extends TestCase
 {
@@ -14,6 +16,7 @@ class TimeServiceTest extends TestCase
     protected function setUp(): void
     {
         $this->baseDir = realpath(__DIR__ . '/../../Storage/Timestamps');
+        error_log($this->baseDir);
         if (!file_exists($this->baseDir)) {
             mkdir($this->baseDir, 0777, true);
         }

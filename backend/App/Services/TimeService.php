@@ -7,11 +7,13 @@ Purpose: Provides time-related utilities to manage and format time calculations 
 Responsibilities:
     Calculate time thresholds (e.g., 30 minutes ago, 7 days ago).
     Handle timezone settings.
-
 */
 
-class TimeService {
+namespace App\Services; // Add the namespace to ensure proper autoloading
 
+use RuntimeException;
+
+class TimeService {
 
     public function __construct() {
         date_default_timezone_set('UTC');
@@ -24,42 +26,43 @@ class TimeService {
     public function getDaysAgo($days) {
         return strtotime("- $days days");
     }
-    
+
     public function getTimestamp($variableName, $default = 0) {
         $baseDir = realpath(APP_FILEDIR . 'Storage/Timestamps/');
         
-        // Construct the full path and sanitize it
-        $filePath = realpath($baseDir . '/' . basename($this->queSentFile));
+        // Sanitize the filename and construct the full path
         $variableFile = $baseDir . '/' . basename($variableName) . '.txt';
-        
-        // Ensure the file is within the base directory and exists
-        if (strpos($filePath, $baseDir) === 0 && file_exists($variableFile)) {
+
+        // Ensure the file exists
+        if (file_exists($variableFile)) {
             return (int)file_get_contents($variableFile);
         }
-        // If the file is outside the base directory or doesn't exist, return the default value
+
+        // If the file doesn't exist, return the default value
         return $default;
     }
 
     public function setTimestamp($variableName, $timestamp = null) {
         $baseDir = realpath(APP_FILEDIR . 'Storage/Timestamps/');
         
-        // Construct the full path and sanitize it
-        $filePath = realpath($baseDir . '/' . basename($this->queSentFile));
-        $variableFile = $baseDir . '/' . basename($variableName) . '.txt';
+        // Sanitize the filename to prevent directory traversal
+        $sanitizedFileName = basename($variableName) . '.txt';
+        $variableFile = $baseDir . '/' . $sanitizedFileName;
         
-        // Ensure the file path is within the base directory
-        if (strpos($filePath, $baseDir) === 0) {
-            // If no timestamp is provided, use the current time
-            if ($timestamp === null) {
-                $timestamp = time();
-            }
+        // Verify that the final path is within the base directory
+        if (strpos(realpath($variableFile), $baseDir) !== 0) {
+            throw new RuntimeException('Invalid file path');
+        }
     
-            // Write the timestamp to the file
-            file_put_contents($variableFile, $timestamp);
-            $this->queSent = $timestamp; // Optionally update the property if needed
-        } else {
-            // Optionally, handle the case where the file path is invalid
-            throw new \RuntimeException('Invalid file path');
+        // If no timestamp is provided, use the current time
+        if ($timestamp === null) {
+            $timestamp = time();
+        }
+    
+        // Write the timestamp to the file
+        if (file_put_contents($variableFile, $timestamp) === false) {
+            throw new RuntimeException('Failed to write timestamp');
         }
     }
+    
 }
