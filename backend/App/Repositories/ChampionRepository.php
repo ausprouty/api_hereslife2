@@ -1,5 +1,16 @@
 <?php
 
+/*
+ ChampionRepository
+
+    Purpose: Handles data retrieval and updates related to champions (the people downloading materials).
+    Responsibilities:
+        Fetch champions who have requested tips but haven’t received them.
+        Update champions' records after emails are queued.
+        Check if a champion is enrolled in a sequence.
+        Enroll champions in a sequence.
+*/
+
 namespace App\Repositories;
 
 use App\Models\People\ChampionModel;
