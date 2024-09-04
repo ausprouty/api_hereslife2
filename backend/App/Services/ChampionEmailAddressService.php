@@ -8,9 +8,8 @@ use PDO;
 class ChampionEmailAddressService {
     private $databaseService;
 
-    public function __construct($database = 'standard') {
-        writeLog('ChampionEmailAddressService-15', 'database: ' . $database);
-        $this->databaseService = new DatabaseService($database);
+    public function __construct(DatabaseService $databaseService) {
+        $this->databaseService = $databaseService;
     }
 
     public function getChampionEmails($code) {

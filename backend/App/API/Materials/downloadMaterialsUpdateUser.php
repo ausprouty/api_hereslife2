@@ -16,7 +16,6 @@ use App\Utilities\RequestValidator;
 $apiKey = $postInputController->getApiKey();
 RequestValidator::validateUser($postData, $apiKey, 'DownloadMaterialsUpdateUser');
 
-
 // Initialize dependencies for DownloadModel
 $downloadModel = new DownloadModel($database = 'standard');
 $downloadController = new DownloadController($downloadModel , $database);
@@ -28,6 +27,6 @@ $userMaterialService = new UserMaterialService(
     $championController,
     $downloadController
 );
-writeLog('downloadMaterialsUpdateUser-40',  $postInputController->getDataSet());
+writeLog('downloadMaterialsUpdateUser-40',  $postData);
 header('Content-Type: application/json');
 echo $userMaterialService->handleUserMaterialDownload($postInputController->getDataSet());

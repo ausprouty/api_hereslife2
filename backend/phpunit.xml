@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit bootstrap="bootstrap.php" verbose="true">
-    <cacheResult directory="./Tests/Output" />
+<phpunit bootstrap="bootstrap.php" verbose="true" cacheResult="true" cacheResultFile="./Tests/Output/.phpunit.result.cache">
+    
     <testsuites>
         <testsuite name="Unit Tests">
             <directory>./Tests</directory>

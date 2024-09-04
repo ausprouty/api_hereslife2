@@ -39,6 +39,7 @@ backend/Imports/*
 backend/Imports/data/*
 backend/Libraries/HtmlPurifier/*
 backend/Resources/*
+backend/Tests/Output/*
 
 backend/Vendor/*
 
