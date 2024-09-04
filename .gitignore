@@ -32,13 +32,18 @@ public/*
 backend/.htaccess
 backend/App.zip
 backend/App/Configuration/.env*
-backend/logs/*
-backend/Imports/data/*
-backend/Vendor/*
-backend/Resources/*
 backend/App/Logs/*
+backend/App/Storage/*
+backend/logs/*
 backend/Imports/*
+backend/Imports/data/*
 backend/Libraries/HtmlPurifier/*
+backend/Resources/*
+
+backend/Vendor/*
+
+
+
 
 
 

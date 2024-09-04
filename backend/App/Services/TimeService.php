@@ -45,10 +45,15 @@ class TimeService {
     public function setTimestamp($variableName, $timestamp = null) {
         $baseDir = realpath(APP_FILEDIR . 'Storage/Timestamps/');
         
-        // Sanitize the filename to prevent directory traversal
+        // Sanitize the filename
         $sanitizedFileName = basename($variableName) . '.txt';
         $variableFile = $baseDir . '/' . $sanitizedFileName;
-        
+    
+        // Verify the filename doesn't match common system files or invalid patterns
+        if (preg_match('/\b(passwd|shadow|hosts)\b/i', $sanitizedFileName)) {
+            throw new RuntimeException('Invalid file path or name');
+        }
+    
         // Verify that the final path is within the base directory
         if (strpos(realpath($variableFile), $baseDir) !== 0) {
             throw new RuntimeException('Invalid file path');
