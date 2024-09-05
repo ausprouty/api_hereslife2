@@ -137,6 +137,15 @@ class EmailQueModel {
         }
         return $count . ' emails qued';
     }
+    
+    public function queEmail($championID, $emailID) {
+        $params = array(
+            'champion_id' => $championID,
+            'email_id' => $emailID
+        );
+        $this->create($params);
+        $this->save();
+    }
 
     // Getters for properties
     public function getId() { return $this->id; }

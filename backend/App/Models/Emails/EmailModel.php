@@ -85,6 +85,16 @@ class EmailModel {
         $results = $this->databaseService->executeQuery($query, $params);
         return $results->fetch(PDO::FETCH_ASSOC);
     }
+    public function findIdForSeries($series, $sequence) {
+        $query = "SELECT id
+                  FROM hl_emails 
+                  WHERE series = :series
+                  AND sequence = :sequence
+                  LIMIT 1";
+        $params = [':series' => $series, ':sequence' => $sequence];
+        $results = $this->databaseService->executeQuery($query, $params);
+        return $results->fetch(PDO::FETCH_COLUMN);
+    }
     public function getRecentBlogTitles($number) {
         $int = (int)$number;
         $query = "SELECT subject, id

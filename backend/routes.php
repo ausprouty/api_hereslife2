@@ -6,6 +6,7 @@ $path = PATH;
 //error_log ($path . 'spirit/titles');
 get($path, '/App/Views/indexLocal.php');
 get($path . 'admin/exists', 'App/API/People/AdminExists.php');
+get($path . 'cron/tips/first', 'App/API/Emails/EmailFirstTips.php');
 get($path . 'email/$id', 'App/API/Emails/GetEmail.php');
 get($path . 'email/ad/recent/$number', 'App/API/Emails/AddRecentTitles.php');
 get($path . 'email/blog/recent/$number', 'App/API/Emails/BlogRecentTitles.php');
