@@ -19,6 +19,78 @@ class SpiritModel {
     public function __construct(DatabaseService $databaseService) {
         $this->databaseService = $databaseService;
     }
+        // Set values with defaults for missing parameters
+    public function setValues(array $data) {
+        $defaults = [
+            'id' => null,
+            'name' => '',
+            'webpage' => '',
+            'images' => '',
+            'hlId' => null,
+            'valid' => 1,  // Assume valid by default
+            'promo' => null,
+        ];
+
+        // Merge provided params with defaults
+        $data = array_merge($defaults, $data);
+
+        // Assign values to object properties
+        $this->id = $data['id'];
+        $this->name = $data['name'];
+        $this->webpage = $data['webpage'];
+        $this->images = $data['images'];
+        $this->hlId = $data['hlId'];
+        $this->valid = $data['valid'];
+        $this->promo = $data['promo'];
+    }
+
+    // Insert the object's values into the database
+    public function insert() {
+        $query = "INSERT INTO hl_spirits (name, webpage, images, hlId, valid, promo)
+                    VALUES (:name, :webpage, :images, :hlId, :valid, :promo)";
+        
+        $params = [
+            ':name' => $this->name,
+            ':webpage' => $this->webpage,
+            ':images' => $this->images,
+            ':hlId' => $this->hlId,
+            ':valid' => $this->valid,
+            ':promo' => $this->promo,
+        ];
+
+        // Execute the query with the parameters
+        return $this->databaseService->executeUpdate($query, $params);
+    }
+    
+        
+    
+    // Save method to decide between insert and update based on object state
+    public function save() {
+        if (isset($this->id)) {
+            return $this->update($this->id);
+        } else {
+            return $this->insert();
+        }
+    }
+    // Update an existing record
+    public function update($id) {
+        $query = "UPDATE hl_spirits 
+                    SET name = :name, webpage = :webpage, images = :images, hlId = :hlId, valid = :valid, promo = :promo
+                    WHERE id = :id";
+        
+        $params = [
+            ':id' => $id,
+            ':name' => $this->name,
+            ':webpage' => $this->webpage,
+            ':images' => $this->images,
+            ':hlId' => $this->hlId,
+            ':valid' => $this->valid,
+            ':promo' => $this->promo,
+        ];
+
+        // Execute the query
+        return $this->databaseService->executeUpdate($query, $params);
+    }
 
     public function getTitlesByLanguageName() {
         $query = "SELECT languageName FROM hl_spirit ORDER BY languageName";

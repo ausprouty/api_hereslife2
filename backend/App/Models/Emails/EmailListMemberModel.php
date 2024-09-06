@@ -14,23 +14,63 @@ class EmailListMemberModel {
         $this->databaseService = $databaseService;
     }
 
-    // Create a new record
-    public function create($data) {
+    // This method sets the object's values and applies default values
+    public function setValues($data) {
+        // Define default values
+        $defaults = [
+            'list_id' => null,
+            'list_name' => null,
+            'champion_id' => null,
+            'subscribed' => 0, // Default: not subscribed
+            'last_tip_sent' => 0,
+            'last_tip_sent_time' => null,
+            'finished_all_tips' => 0,
+            'unsubscribed' => 0
+        ];
+
+        // Merge provided data with defaults
+        $data = array_merge($defaults, $data);
+
+        // Set the object properties
+        $this->list_id = $data['list_id'];
+        $this->list_name = $data['list_name'];
+        $this->champion_id = $data['champion_id'];
+        $this->subscribed = $data['subscribed'];
+        $this->last_tip_sent = $data['last_tip_sent'];
+        $this->last_tip_sent_time = $data['last_tip_sent_time'];
+        $this->finished_all_tips = $data['finished_all_tips'];
+        $this->unsubscribed = $data['unsubscribed'];
+    }
+
+    // This method inserts the object's values into the database
+    public function insert() {
         $query = "INSERT INTO hl_email_list_members 
                     (list_id, list_name, champion_id, subscribed, last_tip_sent, last_tip_sent_time, finished_all_tips, unsubscribed)
                   VALUES 
                     (:list_id, :list_name, :champion_id, :subscribed, :last_tip_sent, :last_tip_sent_time, :finished_all_tips, :unsubscribed)";
+
         $params = [
-            ':list_id' => $data['list_id'],
-            ':list_name' => $data['list_name'],
-            ':champion_id' => $data['champion_id'],
-            ':subscribed' => $data['subscribed'],
-            ':last_tip_sent' => $data['last_tip_sent'],
-            ':last_tip_sent_time' => $data['last_tip_sent_time'],
-            ':finished_all_tips' => $data['finished_all_tips'],
-            ':unsubscribed' => $data['unsubscribed']
+            ':list_id' => $this->list_id,
+            ':list_name' => $this->list_name,
+            ':champion_id' => $this->champion_id,
+            ':subscribed' => $this->subscribed,
+            ':last_tip_sent' => $this->last_tip_sent,
+            ':last_tip_sent_time' => $this->last_tip_sent_time,
+            ':finished_all_tips' => $this->finished_all_tips,
+            ':unsubscribed' => $this->unsubscribed
         ];
+
+        // Execute the query
         return $this->databaseService->executeUpdate($query, $params);
+    }
+
+    // This method combines setValues and insert for creating a new record
+    public function create($data) {
+        // Set the object's values
+        $this->setValues($data);
+
+        // Insert the data into the database
+        return $this->insert();
     }
 
     // Update an existing record

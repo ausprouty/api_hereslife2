@@ -14,21 +14,62 @@ class EmailModel {
         $this->databaseService = $databaseService;
     }
     
-    public function create($data) {
+    // This method sets the object's values and applies default values
+    public function setValues($params) {
+        // Define default values
+        $defaults = [
+            'subject' => 'Default Subject',
+            'body' => 'No content available',
+            'plain_text_only' => 0,
+            'headers' => '',
+            'template' => 'default_template',
+            'series' => null,
+            'sequence' => 1,
+            'params' => json_encode([]), // Empty JSON by default
+        ];
+
+        // Merge provided data with defaults
+        $params = array_merge($defaults, $params);
+
+        // Assign values to the object's properties
+        $this->subject = $params['subject'];
+        $this->body = $params['body'];
+        $this->plain_text_only = $params['plain_text_only'];
+        $this->headers = $params['headers'];
+        $this->template = $params['template'];
+        $this->series = $params['series'];
+        $this->sequence = $params['sequence'];
+        $this->params = $params['params'];
+    }
+
+    // This method inserts the object's data into the database
+    public function insert() {
         $query = "INSERT INTO hl_emails (subject, body, plain_text_only, headers, template, series, sequence, params)
                   VALUES (:subject, :body, :plain_text_only, :headers, :template, :series, :sequence, :params)";
+        
         $params = [
-            ':subject' => $data['subject'],
-            ':body' => $data['body'],
-            ':plain_text_only' => $data['plain_text_only'],
-            ':headers' => $data['headers'],
-            ':template' => $data['template'],
-            ':series' => $data['series'],
-            ':sequence' => $data['sequence'],
-            ':params' => $data['params']
+            ':subject' => $this->subject,
+            ':body' => $this->body,
+            ':plain_text_only' => $this->plain_text_only,
+            ':headers' => $this->headers,
+            ':template' => $this->template,
+            ':series' => $this->series,
+            ':sequence' => $this->sequence,
+            ':params' => $this->params,
         ];
+
+        // Execute the insert query with the parameters
         return $this->databaseService->executeUpdate($query, $params);
     }
+
+    // This method combines setValues and insert to create a new record
+    public function create($params) {
+        // Set the object's values, applying default values where necessary
+        $this->setValues($params);
+        // Insert the data into the database
+        return $this->insert();
+    }
+
 
     public function update($id, $data) {
         $query = "UPDATE hl_emails 

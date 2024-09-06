@@ -28,12 +28,12 @@ class EmailQueModel {
      * @param DatabaseService $databaseService
      * @param array $params Optional parameters for initialization.
      */
-    public function __construct(DatabaseService $databaseService, array $params = []) {
+    public function __construct(DatabaseService $databaseService) {
         $this->databaseService = $databaseService;
-        $this->create($params);  // Initialize with optional parameters if provided
+        
     }
-
-    public function create($params) {
+    public function setValues($params) {
+        // Define default values
         $defaults = [
             'id' => null,
             'delay_until' => 0,
@@ -50,8 +50,10 @@ class EmailQueModel {
             'params' => null,
         ];
 
+        // Merge provided params with defaults
         $params = array_merge($defaults, $params);
 
+        // Assign values to object properties
         foreach ($params as $key => $value) {
             if (!is_null($value)) {
                 $this->$key = $value;
@@ -59,6 +61,7 @@ class EmailQueModel {
         }
     }
 
+    // Insert the object's values into the database
     public function save() {
         $query = "INSERT INTO hl_email_que 
                   (delay_until, email_from, email_to, email_id, champion_id, subject, body, plain_text_only, headers, plain_text_body, template, params) 
@@ -79,9 +82,20 @@ class EmailQueModel {
             ':template' => $this->template,
             ':params' => $this->params
         ];
-    
+
+        // Execute the query with the parameters
         return $this->databaseService->executeUpdate($query, $params);
     }
+
+    // Combines setting values and saving the object to the database
+    public function create($params) {
+        // Set the values from the provided params
+        $this->setValues($params);
+        
+        // Save the object to the database
+        return $this->save();
+    }
+  
 
     public function update() {
         $query = "UPDATE hl_email_que 
@@ -137,7 +151,7 @@ class EmailQueModel {
         }
         return $count . ' emails qued';
     }
-    
+
     public function queEmail($championID, $emailID) {
         $params = array(
             'champion_id' => $championID,

@@ -32,20 +32,48 @@ class AdministratorModel {
      
     }
 
-    // Create a new administrator
-    public function create($data) {
+    /// Set the values for the object, including default values
+    public function setValues(array $data) {
+        $defaults = [
+            'first_name' => '',
+            'last_name' => '',
+            'username' => '',
+            'password' => '',
+        ];
+
+        // Merge provided data with default values
+        $data = array_merge($defaults, $data);
+
+        // Assign values to the object properties
+        $this->first_name = $data['first_name'];
+        $this->last_name = $data['last_name'];
+        $this->username = $data['username'];
+        $this->password = password_hash($data['password'], PASSWORD_DEFAULT); // Hash the password
+    }
+
+    // Insert the administrator into the database
+    public function insert() {
         $query = "INSERT INTO hl_administrators (first_name, last_name, username, password)   
                   VALUES (:first_name, :last_name, :username, :password)";
+        
         $params = [
-            ':first_name' => $data['first_name'],
-            ':last_name' => $data['last_name'],
-            ':username' => $data['username'],
-            ':password' =>  password_hash($data['password'], PASSWORD_DEFAULT) // Hash the password
-           
+            ':first_name' => $this->first_name,
+            ':last_name' => $this->last_name,
+            ':username' => $this->username,
+            ':password' => $this->password
         ];
+
+        // Execute the query and get the last inserted ID
         $this->databaseService->executeUpdate($query, $params);
         $this->id = $this->databaseService->getLastInsertId();
     }
+
+    // Create method: combine setValues and insert
+    public function create(array $data) {
+        $this->setValues($data); // Set values for the object
+        return $this->insert();  // Insert into the database
+    }
+
    
     // Update administrator details
     public function update() {
@@ -65,6 +93,12 @@ class AdministratorModel {
         ];
         
         return $this->databaseService->executeQuery($query, $params);
+    }
+    // Delete method: delete the record based on ID
+    public function delete($id) {
+        $query = "DELETE FROM hl_administrators WHERE id = :id";
+        $params = [':id' => $id];
+        return $this->databaseService->executeUpdate($query, $params);
     }
     
 

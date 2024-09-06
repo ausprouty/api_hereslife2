@@ -1,66 +1,57 @@
 <?php
-  /***************************************************
-   * Only these origins are allowed to upload images *
-   ***************************************************/
-  $accepted_origins = array("http://localhost", "http://192.168.1.1", "http://example.com");
 
-  /*********************************************
-   * Change this line to set the upload folder *
-   *********************************************/
-  $imageFolder = ROOT_IMAGES_EMAILS;
+/**
+ * Handle image uploads from a TinyMCE editor or any other file input.
+ *
+ * This script processes an uploaded image, verifies its validity, and moves it to
+ * the designated folder. The script responds with a JSON object containing the image's
+ * location, or returns an error if the upload fails or the file is invalid.
+ *
+ * @global array $accepted_origins An array of accepted origin URLs to protect against cross-origin requests.
+ * @global string $imageFolder The folder path where images are uploaded.
+ *
+ * @return void Outputs a JSON response with the image location or an error message.
+ */
 
-  if (isset($_SERVER['HTTP_ORIGIN'])) {
-    // same-origin requests won't set an origin. If the origin is set, it must be valid.
-    if (in_array($_SERVER['HTTP_ORIGIN'], $accepted_origins)) {
-      header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
-    } else {
-      header("HTTP/1.1 403 Origin Denied");
-      return;
-    }
-  }
 
-  // Don't attempt to process the upload on an OPTIONS request
-  if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-    header("Access-Control-Allow-Methods: POST, OPTIONS");
-    return;
-  }
+// Define the folder where images will be saved
+$imageFolder = ROOT_IMAGES_EMAILS;
 
-  reset ($_FILES);
-  $temp = current($_FILES);
-  if (is_uploaded_file($temp['tmp_name'])){
-    /*
-      If your script needs to receive cookies, set images_upload_credentials : true in
-      the configuration and enable the following two headers.
-    */
-    // header('Access-Control-Allow-Credentials: true');
-    // header('P3P: CP="There is no P3P policy."');
+// Check if a file has been uploaded
+reset($_FILES);
+$temp = current($_FILES);
 
-    // Sanitize input
+if (is_uploaded_file($temp['tmp_name'])) {
+
+    // Sanitize the input to ensure the file name is valid
     if (preg_match("/([^\w\s\d\-_~,;:\[\]\(\).])|([\.]{2,})/", $temp['name'])) {
         header("HTTP/1.1 400 Invalid file name.");
         return;
     }
 
-    // Verify extension
-    if (!in_array(strtolower(pathinfo($temp['name'], PATHINFO_EXTENSION)), array("gif", "jpg", "png"))) {
+    // Verify the file extension (only allow gif, jpg, png)
+    $valid_extensions = array("gif", "jpg", "png");
+    $file_extension = strtolower(pathinfo($temp['name'], PATHINFO_EXTENSION));
+    if (!in_array($file_extension, $valid_extensions)) {
         header("HTTP/1.1 400 Invalid extension.");
         return;
     }
 
-    // Accept upload if there was no origin, or if it is an accepted origin
+    // Define the path to write the uploaded file
     $filetowrite = $imageFolder . $temp['name'];
     move_uploaded_file($temp['tmp_name'], $filetowrite);
 
-    // Determine the base URL
+    // Determine the base URL for the response
     $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? "https://" : "http://";
     $baseurl = $protocol . $_SERVER["HTTP_HOST"] . rtrim(dirname($_SERVER['REQUEST_URI']), "/") . "/";
+   
+    // Set the content type to JSON
+    header('Content-Type: application/json');
+    
+    // Respond to the successful upload with the file location in JSON format
+    echo json_encode(['location' => $baseurl . $filetowrite]);
 
-    // Respond to the successful upload with JSON.
-    // Use a location key to specify the path to the saved image resource.
-    // { location : '/your/uploaded/image/file'}
-    echo json_encode(array('location' => $baseurl . $filetowrite));
-  } else {
-    // Notify editor that the upload failed
+} else {
+    // Handle failure to upload the file
     header("HTTP/1.1 500 Server Error");
-  }
-?>
+}

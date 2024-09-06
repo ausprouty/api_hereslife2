@@ -1,35 +1,57 @@
 <?php
-
+namespace App\Controllers\Emails;
 // Ensure that the models are included or autoloaded properly
-require_once 'App/Models/Emails/EmailListMemberModel.php';
-require_once 'App/Models/Emails/EmailModel.php';
+use App\Models\Emails\EmailListMemberModel;
+use App\Models\Emails\EmailModel;
+use App\Models\Emails\EmailQueModel;
+
 
 class EmailListMemberController {
 
     private $emailListMemberModel;
+    private $emailQueModel;
     private $emailModel;
 
-    // Inject both models via the constructor
-    public function __construct(EmailListMemberModel $emailListMemberModel, EmailModel $emailModel)
+    // Inject all models via the constructor
+    public function __construct(EmailListMemberModel $emailListMemberModel, EmailModel $emailModel, EmailQueModel $emailQueModel)
     {
         $this->emailListMemberModel = $emailListMemberModel;
         $this->emailModel = $emailModel;
+        $this->emailQueModel = $emailQueModel;
     }
 
-    // Handle a request to find new requests for tips
-    public function findNewRequestsForTips()
+    /**
+     * Processes new requests for tips and sends tips to each member.
+     *
+     * This method fetches new requests for tips from the database, processes each request by
+     * queuing a tip for the member, and updates the `last_tip_sent` and `last_tip_sent_time` 
+     * fields in the database upon successful tip delivery.
+     *
+     * The requests array contains the following fields:
+     * - 'id': The ID of the request.
+     * - 'list_name': The name of the email list.
+     * - 'champion_id': The ID of the member (champion).
+     * - 'last_tip_sent': The sequence number of the last tip that was sent.
+     * - 'last_tip_sent_time': The timestamp of when the last tip was sent.
+     *
+     * @return void
+     */
+    public function processNewEmailTips()
     {
         // Fetch new requests for tips
         $newRequests = $this->emailListMemberModel->findNewRequestsForTips();
+
         // Process each request
         foreach ($newRequests as $request) {
-            $result = $this->queTipForMember($request);
+            $result = $this->queTipForMember($request['champion_id'], $request['list_name'], 1);
+
             if ($result == 'TRUE') {
                 // Update the last_tip_sent and last_tip_sent_time fields
                 $data = [
                     'last_tip_sent' => 1, 
                     'last_tip_sent_time' => time(),  // Current timestamp
                 ];
+
                 // Update the member with the new data
                 $this->emailListMemberModel->update($request['id'], $data);
             } else {
@@ -38,29 +60,43 @@ class EmailListMemberController {
         }
     }
 
-    // Handle a request to find a tip for a series
+    /**
+     * Find the Email ID of a tip for a specific series and sequence number.
+     *
+     * This method retrieves the ID of a tip from a specific email series based on the
+     * series name and the sequence number of the tip within that series.
+     *
+     * @param string $list_name The name of the email series.
+     * @param int $sequence The sequence number of the tip in the series.
+     * @return mixed The ID of the tip found, or null if no tip is found.
+     */
     public function findTipForSeries($list_name, $sequence)
     {
         $tip = $this->emailModel->findIdForSeries($list_name, $sequence);
         return $tip;
     }
 
-    // Placeholder for queTipForMember method
-    public function queTipForMember($member)
+
+    public function queTipForMember($champion_id, $list_name, $sequence)
     {
-        // Implement the queuing logic here
-        return 'TRUE'; // Return true for demo purposes
+        $email_id = $this->findTipForSeries($list_name, $sequence);
+        $data = [
+            'champion_id' => $champion_id,
+            'email_id' => $email_id
+        ];
+        $this->emailQueModel->create($data)->save();
+        return 'TRUE'; 
     }
 
-    // Handle a request to get a member by ID
+   
     public function getMemberById($id)
     {
         $member = $this->emailListMemberModel->findById($id);
 
         if ($member) {
-            return json_encode($member); // Return as JSON response
+            return $member;
         } else {
-            return json_encode(['error' => 'Member not found'], JSON_PRETTY_PRINT); // Error handling
+            null;
         }
     }
 
@@ -70,9 +106,9 @@ class EmailListMemberController {
         $result = $this->emailListMemberModel->create($data);
 
         if ($result) {
-            return json_encode(['message' => 'Member created successfully']);
+            return 'Member created successfully';
         } else {
-            return json_encode(['error' => 'Failed to create member']);
+            return 'Failed to create member';
         }
     }
 
@@ -82,9 +118,9 @@ class EmailListMemberController {
         $result = $this->emailListMemberModel->update($id, $data);
 
         if ($result) {
-            return json_encode(['message' => 'Member updated successfully']);
+            return 'Member updated successfully';
         } else {
-            return json_encode(['error' => 'Failed to update member']);
+            return 'Failed to update member';
         }
     }
 
