@@ -1,8 +1,14 @@
 <?php
-namespace App\Models\Materials;
+
+namespace App\Entities\Materials;
 
 use App\Services\DatabaseService;
 
+/**
+ * Class MaterialEntity
+ * 
+ * Represents a material entity, encapsulating the data and behavior related to a material.
+ */
 class MaterialEntity {
 
     private $id;
@@ -26,12 +32,20 @@ class MaterialEntity {
 
     private $databaseService;
 
-    // Constructor now accepts DatabaseService for dependency injection
+    /**
+     * MaterialEntity constructor.
+     * 
+     * @param DatabaseService $databaseService - The database service used for executing queries.
+     */
     public function __construct(DatabaseService $databaseService) {
         $this->databaseService = $databaseService;
     }
 
-    // Set the values for this entity
+    /**
+     * Sets the values for this entity.
+     * 
+     * @param array $data - An associative array of data to initialize the entity.
+     */
     public function setValues(array $data) {
         $defaults = [
             'id' => null,
@@ -76,12 +90,20 @@ class MaterialEntity {
         $this->ordered = $data['ordered'];
     }
 
-    // Save the entity to the database (insert/update logic can be here)
+    /**
+     * Inserts or updates the entity in the database.
+     * 
+     * @return bool - True on success, false on failure.
+     */
     public function save() {
         $query = "INSERT INTO hl_materials 
                   (title, tips, foreign_title_1, foreign_title_2, lang1, lang2, format, audience, contact, filename, category, downloads, active, active_date, size, print_size, ordered)
                   VALUES 
-                  (:title, :tips, :foreign_title_1, :foreign_title_2, :lang1, :lang2, :format, :audience, :contact, :filename, :category, :downloads, :active, :active_date, :size, :print_size, :ordered)";
+                  (:title, :tips, :foreign_title_1, :foreign_title_2, :lang1, :lang2, :format, :audience, :contact, :filename, :category, :downloads, :active, :active_date, :size, :print_size, :ordered)
+                  ON DUPLICATE KEY UPDATE
+                  title = :title, tips = :tips, foreign_title_1 = :foreign_title_1, foreign_title_2 = :foreign_title_2, lang1 = :lang1, lang2 = :lang2, 
+                  format = :format, audience = :audience, contact = :contact, filename = :filename, category = :category, downloads = :downloads, 
+                  active = :active, active_date = :active_date, size = :size, print_size = :print_size, ordered = :ordered";
         
         $params = [
             ':title' => $this->title,
@@ -106,13 +128,19 @@ class MaterialEntity {
         return $this->databaseService->executeUpdate($query, $params);
     }
 
-    // Create the entity (combines setValues and save)
+    /**
+     * Combines setting values and saving the entity to the database.
+     * 
+     * @param array $data - The data to initialize and save the entity.
+     * @return bool - True on success, false on failure.
+     */
     public function create(array $data) {
         $this->setValues($data);
         return $this->save();
     }
 
     // Getters for each property...
+
     public function getId() { return $this->id; }
     public function getTitle() { return $this->title; }
     public function getTips() { return $this->tips; }

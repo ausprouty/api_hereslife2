@@ -4,6 +4,12 @@ namespace App\Models\Materials;
 
 use App\Services\DatabaseService;
 
+/**
+ * DownloadModel
+ *
+ * This class represents a download event for a material. It stores information such as the champion who downloaded it,
+ * the file details, tips sent/requested, and the elapsed time since download.
+ */
 class DownloadModel {
 
     private $databaseService;
@@ -19,75 +25,76 @@ class DownloadModel {
     public $tip;
     public $tip_detail;
 
+    /**
+     * Constructor with Dependency Injection for DatabaseService.
+     *
+     * @param DatabaseService $databaseService Dependency injection for database operations.
+     */
     public function __construct(DatabaseService $databaseService) {
         $this->databaseService = $databaseService;
     }
 
-    // Set default values and assign input values to the object properties
-    public function setValues($params) {
-        // Define default values
+    /**
+     * Set values for the DownloadModel, applying default values if necessary.
+     *
+     * @param array $params Associative array containing the data to set.
+     */
+    public function setValues(array $params) {
         $defaults = [
             'id' => null,
-            'delay_until' => 0,
-            'email_from' => '',
-            'email_to' => '',
-            'email_id' => null,
             'champion_id' => null,
-            'subject' => '',
-            'body' => '',
-            'plain_text_only' => 0,
-            'headers' => '',
-            'plain_text_body' => '',
-            'template' => null,
-            'params' => null,
+            'file_name' => '',
+            'download_date' => time(),
+            'requested_tips' => null,
+            'sent_tips' => null,
+            'file_id' => 0,
+            'elapsed_months' => 0,
+            'tip' => null,
+            'tip_detail' => null
         ];
 
-        // Merge provided params with defaults
+        // Merge provided data with defaults
         $params = array_merge($defaults, $params);
 
-        // Assign values to object properties
+        // Assign values to properties
         foreach ($params as $key => $value) {
-            if (!is_null($value)) {
-                $this->$key = $value;
-            }
+            $this->$key = $value;
         }
     }
 
-    // Insert the object's values into the database
-    public function save() {
-        $query = "INSERT INTO hl_email_que 
-                  (delay_until, email_from, email_to, email_id, champion_id, subject, body, plain_text_only, headers, plain_text_body, template, params) 
+    /**
+     * Insert a new download record into the database.
+     *
+     * @return int|null The ID of the newly inserted record.
+     */
+    public function insert() {
+        $query = "INSERT INTO hl_downloads 
+                  (champion_id, file_name, download_date, requested_tips, sent_tips, file_id, elapsed_months, tip, tip_detail) 
                   VALUES 
-                  (:delay_until, :email_from, :email_to, :email_id, :champion_id, :subject, :body, :plain_text_only, :headers, :plain_text_body, :template, :params)";
-        
+                  (:champion_id, :file_name, :download_date, :requested_tips, :sent_tips, :file_id, :elapsed_months, :tip, :tip_detail)";
+
         $params = [
-            ':delay_until' => $this->delay_until,
-            ':email_from' => $this->email_from,
-            ':email_to' => $this->email_to,
-            ':email_id' => $this->email_id,
             ':champion_id' => $this->champion_id,
-            ':subject' => $this->subject,
-            ':body' => $this->body,
-            ':plain_text_only' => $this->plain_text_only,
-            ':headers' => $this->headers,
-            ':plain_text_body' => $this->plain_text_body,
-            ':template' => $this->template,
-            ':params' => $this->params
+            ':file_name' => $this->file_name,
+            ':download_date' => $this->download_date,
+            ':requested_tips' => $this->requested_tips,
+            ':sent_tips' => $this->sent_tips,
+            ':file_id' => $this->file_id,
+            ':elapsed_months' => $this->elapsed_months,
+            ':tip' => $this->tip,
+            ':tip_detail' => $this->tip_detail
         ];
 
-        // Execute the query with the parameters
-        return $this->databaseService->executeUpdate($query, $params);
+        // Execute the query and return the inserted ID
+        $this->databaseService->executeUpdate($query, $params);
+        return $this->databaseService->getLastInsertId();
     }
 
-    // Combines setting values and saving the object to the database
-    public function create($params) {
-        // Set the values from the provided params
-        $this->setValues($params);
-        
-        // Save the object to the database
-        return $this->save();
-    }
-
+    /**
+     * Update an existing download record in the database.
+     *
+     * @return bool Returns true if the update was successful.
+     */
     public function update() {
         $query = "UPDATE hl_downloads 
                   SET champion_id = :champion_id,
@@ -101,7 +108,7 @@ class DownloadModel {
                       tip_detail = :tip_detail
                   WHERE id = :id";
         
-        $params = array(
+        $params = [
             ':champion_id' => $this->champion_id,
             ':file_name' => $this->file_name,
             ':download_date' => $this->download_date,
@@ -112,23 +119,118 @@ class DownloadModel {
             ':tip' => $this->tip,
             ':tip_detail' => $this->tip_detail,
             ':id' => $this->id
-        );
-        // Execute the query and return the result
-        return $this->databaseService->executeQuery($query, $params);
+        ];
+
+        return $this->databaseService->executeUpdate($query, $params);
     }
 
-    
+    /**
+     * Create a new download record or update an existing one.
+     *
+     * @param array $params Data to create or update the download record.
+     * @return int|null The ID of the created or updated download record.
+     */
+    public function create(array $params) {
+        $this->setValues($params);
 
-    // Getters
-    public function getId() { return $this->id; }
-    public function getChampionId() { return $this->champion_id; }
-    public function getFileName() { return $this->file_name; }
-    public function getDownloadDate() { return $this->download_date; }
-    public function getRequestedTips() { return $this->requested_tips; }
-    public function getSentTips() { return $this->sent_tips; }
-    public function getFileId() { return $this->file_id; }
-    public function getElapsedMonths() { return $this->elapsed_months; }
-    public function getTip() { return $this->tip; }
-    public function getTipDetail() { return $this->tip_detail; }
+        if ($this->id) {
+            $this->update();
+        } else {
+            return $this->insert();
+        }
+
+        return $this->id;
+    }
+
+    // Getters for accessing properties
+
+    /**
+     * Get the download ID.
+     *
+     * @return int|null
+     */
+    public function getId() {
+        return $this->id;
+    }
+
+    /**
+     * Get the champion ID who downloaded the material.
+     *
+     * @return int|null
+     */
+    public function getChampionId() {
+        return $this->champion_id;
+    }
+
+    /**
+     * Get the file name of the downloaded material.
+     *
+     * @return string
+     */
+    public function getFileName() {
+        return $this->file_name;
+    }
+
+    /**
+     * Get the date when the material was downloaded.
+     *
+     * @return int The timestamp of the download date.
+     */
+    public function getDownloadDate() {
+        return $this->download_date;
+    }
+
+    /**
+     * Get the requested tips associated with the download.
+     *
+     * @return string|null
+     */
+    public function getRequestedTips() {
+        return $this->requested_tips;
+    }
+
+    /**
+     * Get the sent tips associated with the download.
+     *
+     * @return string|null
+     */
+    public function getSentTips() {
+        return $this->sent_tips;
+    }
+
+    /**
+     * Get the file ID of the downloaded material.
+     *
+     * @return int
+     */
+    public function getFileId() {
+        return $this->file_id;
+    }
+
+    /**
+     * Get the number of months elapsed since the download.
+     *
+     * @return int
+     */
+    public function getElapsedMonths() {
+        return $this->elapsed_months;
+    }
+
+    /**
+     * Get the tip associated with the download.
+     *
+     * @return string|null
+     */
+    public function getTip() {
+        return $this->tip;
+    }
+
+    /**
+     * Get the details of the tip associated with the download.
+     *
+     * @return string|null
+     */
+    public function getTipDetail() {
+        return $this->tip_detail;
+    }
 }
-

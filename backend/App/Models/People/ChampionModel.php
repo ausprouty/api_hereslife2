@@ -26,8 +26,44 @@ class ChampionModel
     private $last_download_date;
     private $last_email_date;
 
+    // Constructor doesn't handle data, use setValues for that
     public function __construct(array $data = [])
     {
+        // Use setValues to initialize the object
+        $this->setValues($data);
+    }
+
+    // Set values for the object, applying default values
+    public function setValues(array $data)
+    {
+        $defaults = [
+            'cid' => null,
+            'first_name' => '',
+            'surname' => '',
+            'title' => '',
+            'organization' => '',
+            'address' => '',
+            'suburb' => '',
+            'state' => '',
+            'postcode' => '',
+            'country' => '',
+            'phone' => '',
+            'sms' => '',
+            'email' => '',
+            'gender' => null,
+            'double_opt_in_date' => null,
+            'first_email_date' => null,
+            'last_open_date' => null,
+            'consider_dropping_date' => null,
+            'first_download_date' => null,
+            'last_download_date' => null,
+            'last_email_date' => null,
+        ];
+
+        // Merge provided data with defaults
+        $data = array_merge($defaults, $data);
+
+        // Set object properties using the merged array
         foreach ($data as $field => $value) {
             if (property_exists($this, $field)) {
                 $this->$field = $value;

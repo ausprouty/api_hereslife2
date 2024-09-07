@@ -4,7 +4,7 @@ namespace App\Models\Emails;
 use App\Services\DatabaseService;
 use PDO;
 
-class EmailListMemberModel {
+class XEmailListMemberModel {
 
     private $databaseService;
 
