@@ -135,22 +135,26 @@ class ChampionEmailAddressServiceTest extends TestCase
         $this->assertEquals('france@example.com', $result[0]['email']);
     }
 
-    /**
-     * Test getChampionEmails with code 'non_muslim'.
-     * Ensures left join logic works and returns champions without matching downloads.
-     */
+   /**
+ * Test getChampionEmails with code 'non_muslim'.
+ * Ensures left join logic works and returns champions without matching downloads.
+ */
     public function testGetChampionEmailsWithCodeNonMuslim()
     {
         $code = 'non_muslim';
-        $expectedQueryPart = "SELECT DISTINCT c.cid, c.email, c.first_name, c.country
-                    FROM hl_champions AS c
-                    LEFT JOIN hl_downloads AS d ON c.cid = d.champion_id
-                    AND (d.file_name LIKE :f1 OR d.file_name LIKE :f2)
-                    WHERE d.champion_id IS NULL
-                    AND c.email != :blank
-                    AND c.email IS NOT NULL
-                    AND c.email NOT LIKE :point";
+
+        // Define the expected query (collapsed into a single line for easier comparison)
+        $expectedQueryPart = 
+            "SELECT DISTINCT c.cid, c.email, c.first_name, c.country
+            FROM hl_champions AS c
+            LEFT JOIN hl_downloads AS d ON c.cid = d.champion_id
+            AND (d.file_name LIKE :f1 OR d.file_name LIKE :f2)
+            WHERE d.champion_id IS NULL
+            AND c.email != :blank
+            AND c.email IS NOT NULL
+            AND c.email NOT LIKE :point";
         
+        // Define expected parameters
         $expectedParams = [
             ':f1' => '%Mp%',
             ':f2' => '%Mb%',
@@ -158,7 +162,7 @@ class ChampionEmailAddressServiceTest extends TestCase
             ':point' => '!%'
         ];
 
-        // Mock the expected result
+        // Mock the expected result from the database
         $statementMock = $this->createMock(PDOStatement::class);
         $statementMock->expects($this->once())
             ->method('fetchAll')
@@ -171,17 +175,20 @@ class ChampionEmailAddressServiceTest extends TestCase
         $this->databaseServiceMock
             ->expects($this->once())
             ->method('executeQuery')
-            ->with($this->callback(function ($query) use ($expectedQueryPart) {
-                // Check that the important parts of the query are present
-                return strpos($query, 'SELECT DISTINCT c.cid, c.email, c.first_name, c.country') !== false
-                    && strpos($query, 'LEFT JOIN hl_downloads') !== false
-                    && strpos($query, 'WHERE d.champion_id IS NULL') !== false;
+            ->with($this->callback(function ($actualQuery) use ($expectedQueryPart) {
+                // Normalize both queries by removing extra whitespace and newlines
+                $normalizedExpected = preg_replace('/\s+/', ' ', trim($expectedQueryPart));
+                $normalizedActual = preg_replace('/\s+/', ' ', trim($actualQuery));
+
+                // Compare the normalized queries
+                return $normalizedExpected === $normalizedActual;
             }), $expectedParams)
             ->willReturn($statementMock);
 
-        // Call the method and check the result
+        // Call the method and verify the result
         $result = $this->service->getChampionEmails($code);
         $this->assertCount(1, $result);
         $this->assertEquals('nonmuslim@example.com', $result[0]['email']);
     }
+
 }

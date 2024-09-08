@@ -4,107 +4,113 @@ use PHPUnit\Framework\TestCase;
 use App\Models\Materials\DownloadModel;
 use App\Services\DatabaseService;
 
+/**
+ * DownloadModelTest
+ *
+ * Unit test for the DownloadModel class.
+ */
 class DownloadModelTest extends TestCase
 {
-    private $databaseServiceMock;
     private $downloadModel;
+    private $databaseServiceMock;
 
+    /**
+     * Setup method called before each test to initialize objects.
+     */
     protected function setUp(): void
     {
-        // Mock the DatabaseService
+        // Create a mock of DatabaseService
         $this->databaseServiceMock = $this->createMock(DatabaseService::class);
 
-        // Inject the mocked DatabaseService into the DownloadModel
+        // Inject the mock into DownloadModel
         $this->downloadModel = new DownloadModel($this->databaseServiceMock);
     }
 
+    /**
+     * Test setValues method to ensure properties are correctly assigned.
+     */
     public function testSetValues()
     {
-        // Arrange: Define the parameters
-        $params = [
-            'id' => 1,
-            'champion_id' => 123,
-            'file_name' => 'testfile.pdf',
-            'download_date' => time(),
-            'requested_tips' => 'test tips',
-            'sent_tips' => 'sent tips',
-            'file_id' => 45,
-            'elapsed_months' => 3,
-            'tip' => 'test tip',
-            'tip_detail' => 'detailed tip'
+        // Define input data
+        $data = [
+            'champion_id' => 1,
+            'file_name' => 'example_file.pdf',
+            'download_date' => 1632025680,
+            'requested_tips' => 'Tip 1',
+            'sent_tips' => 'Tip 2',
+            'file_id' => 123,
+            'elapsed_months' => 2,
+            'tip' => 'Sample Tip',
+            'tip_detail' => 'Sample Tip Details',
         ];
 
-        // Act: Set the values in the model
-        $this->downloadModel->setValues($params);
+        // Set values using the method
+        $this->downloadModel->setValues($data);
 
-        // Assert: Check that the values were correctly set
-        $this->assertEquals(1, $this->downloadModel->getId());
-        $this->assertEquals(123, $this->downloadModel->getChampionId());
-        $this->assertEquals('testfile.pdf', $this->downloadModel->getFileName());
-        $this->assertEquals($params['download_date'], $this->downloadModel->getDownloadDate());
-        $this->assertEquals('test tips', $this->downloadModel->getRequestedTips());
-        $this->assertEquals('sent tips', $this->downloadModel->getSentTips());
-        $this->assertEquals(45, $this->downloadModel->getFileId());
-        $this->assertEquals(3, $this->downloadModel->getElapsedMonths());
-        $this->assertEquals('test tip', $this->downloadModel->getTip());
-        $this->assertEquals('detailed tip', $this->downloadModel->getTipDetail());
+        // Assert that the properties were set correctly
+        $this->assertEquals(1, $this->downloadModel->champion_id);
+        $this->assertEquals('example_file.pdf', $this->downloadModel->file_name);
+        $this->assertEquals(1632025680, $this->downloadModel->download_date);
+        $this->assertEquals('Tip 1', $this->downloadModel->requested_tips);
+        $this->assertEquals('Tip 2', $this->downloadModel->sent_tips);
+        $this->assertEquals(123, $this->downloadModel->file_id);
+        $this->assertEquals(2, $this->downloadModel->elapsed_months);
+        $this->assertEquals('Sample Tip', $this->downloadModel->tip);
+        $this->assertEquals('Sample Tip Details', $this->downloadModel->tip_detail);
     }
 
+    /**
+     * Test the insert method to verify that the correct query is executed and an ID is returned.
+     */
     public function testInsert()
     {
-        // Arrange: Set values
-        $this->downloadModel->setValues([
-            'champion_id' => 123,
-            'file_name' => 'testfile.pdf',
-            'download_date' => time(),
-            'requested_tips' => 'test tips',
-            'sent_tips' => 'sent tips',
-            'file_id' => 45,
-            'elapsed_months' => 3,
-            'tip' => 'test tip',
-            'tip_detail' => 'detailed tip'
-        ]);
+        // Define expected query parameters
+        $data = [
+            'champion_id' => 1,
+            'file_name' => 'example_file.pdf',
+            'download_date' => 1632025680,
+            'requested_tips' => 'Tip 1',
+            'sent_tips' => 'Tip 2',
+            'file_id' => 123,
+            'elapsed_months' => 2,
+            'tip' => 'Sample Tip',
+            'tip_detail' => 'Sample Tip Details',
+        ];
 
-        // Mock the executeQuery method to return success
-        $this->databaseServiceMock->expects($this->once())
-            ->method('executeQuery')
-            ->with($this->anything(), $this->anything())
-            ->willReturn(true);  // Simulate successful insert
+        // Set values using the method
+        $this->downloadModel->setValues($data);
 
-        // Act: Call the insert method
-        $result = $this->downloadModel->insert();
+        // Define the query that should be executed
+        $query = "INSERT INTO hl_downloads 
+                  (champion_id, file_name, download_date, requested_tips, sent_tips, file_id, elapsed_months, tip, tip_detail) 
+                  VALUES 
+                  (:champion_id, :file_name, :download_date, :requested_tips, :sent_tips, :file_id, :elapsed_months, :tip, :tip_detail)";
+        
+        $params = [
+            ':champion_id' => 1,
+            ':file_name' => 'example_file.pdf',
+            ':download_date' => 1632025680,
+            ':requested_tips' => 'Tip 1',
+            ':sent_tips' => 'Tip 2',
+            ':file_id' => 123,
+            ':elapsed_months' => 2,
+            ':tip' => 'Sample Tip',
+            ':tip_detail' => 'Sample Tip Details'
+        ];
 
-        // Assert: Verify that the insert was called successfully
-        $this->assertTrue($result);
-    }
+        // Mock the executeUpdate and getLastInsertId methods
+        $this->databaseServiceMock
+            ->expects($this->once())
+            ->method('executeUpdate')
+            ->with($query, $params);
 
-    public function testUpdate()
-    {
-        // Arrange: Set values, including ID for update
-        $this->downloadModel->setValues([
-            'id' => 1,
-            'champion_id' => 123,
-            'file_name' => 'updatedfile.pdf',
-            'download_date' => time(),
-            'requested_tips' => 'updated tips',
-            'sent_tips' => 'updated sent tips',
-            'file_id' => 46,
-            'elapsed_months' => 4,
-            'tip' => 'updated tip',
-            'tip_detail' => 'updated detailed tip'
-        ]);
+        $this->databaseServiceMock
+            ->expects($this->once())
+            ->method('getLastInsertId')
+            ->willReturn('10');
 
-        // Mock the executeQuery method to return success
-        $this->databaseServiceMock->expects($this->once())
-            ->method('executeQuery')
-            ->with($this->anything(), $this->anything())
-            ->willReturn(true);  // Simulate successful update
-
-        // Act: Call the update method
-        $result = $this->downloadModel->update();
-
-        // Assert: Verify that the update was called successfully
-        $this->assertTrue($result);
+        // Call the insert method and assert that the returned ID is correct
+        $insertedId = $this->downloadModel->insert();
+        $this->assertEquals(10, (int)$insertedId);
     }
 }
-

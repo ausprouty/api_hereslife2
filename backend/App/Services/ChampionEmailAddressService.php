@@ -66,6 +66,21 @@ class ChampionEmailAddressService {
                 }
                 break;
 
+            case 'non_australia':
+                $query = $this->getNonCountryQuery();
+                $params[':country'] = 'Australia';
+                break;
+
+            case 'usa':
+                $query = $this->getCountryQuery();
+                $params[':country'] = 'USA';
+                break;
+
+            case 'non_usa':
+                $query = $this->getNonCountryQuery();
+                $params[':country'] = 'USA';
+                break;
+
             case 'australia_not_power_to_change':
                 $query = $this->getCountryOrgExclusionQuery();
                 $params[':country'] = 'Australia';
@@ -80,6 +95,12 @@ class ChampionEmailAddressService {
                 $query = $this->getMuslimQuery();
                 break;
 
+            case 'non_muslim':
+                $query = $this->getNonMuslimQuery();
+                $params[':f1'] = '%Mp%';
+                $params[':f2'] = '%Mb%';
+                break;
+
             default:
                 $query = $this->getDefaultQuery();
                 break;
@@ -89,19 +110,7 @@ class ChampionEmailAddressService {
     }
 
     /**
-     * Builds a default query for retrieving champions with emails.
-     *
-     * @return string The SQL query string.
-     */
-    private function getDefaultQuery(): string {
-        return "SELECT cid, email, first_name, country FROM hl_champions
-                WHERE email != :blank
-                AND email IS NOT NULL
-                AND email NOT LIKE :point";
-    }
-
-    /**
-     * Builds a query to retrieve champions based on country.
+     * Builds a query for champions from a specific country.
      *
      * @return string The SQL query string.
      */
@@ -114,7 +123,20 @@ class ChampionEmailAddressService {
     }
 
     /**
-     * Builds a query to retrieve champions based on country and state within Australia.
+     * Builds a query for champions who are not from a specific country.
+     *
+     * @return string The SQL query string.
+     */
+    private function getNonCountryQuery(): string {
+        return "SELECT cid, email, first_name, country FROM hl_champions 
+                WHERE country != :country
+                AND email != :blank
+                AND email IS NOT NULL
+                AND email NOT LIKE :point";
+    }
+
+    /**
+     * Builds a query for champions based on country and state within Australia.
      *
      * @return string The SQL query string.
      */
@@ -186,5 +208,33 @@ class ChampionEmailAddressService {
                 AND c.email != :blank
                 AND c.email IS NOT NULL
                 AND c.email NOT LIKE :point';
+    }
+
+    /**
+     * Builds a query for non-Muslim champions (champions who have not downloaded certain files).
+     *
+     * @return string The SQL query string.
+     */
+    private function getNonMuslimQuery(): string {
+        return "SELECT DISTINCT c.cid, c.email, c.first_name, c.country
+                FROM hl_champions AS c
+                LEFT JOIN hl_downloads AS d ON c.cid = d.champion_id
+                AND (d.file_name LIKE :f1 OR d.file_name LIKE :f2)
+                WHERE d.champion_id IS NULL
+                AND c.email != :blank
+                AND c.email IS NOT NULL
+                AND c.email NOT LIKE :point";
+    }
+
+    /**
+     * Builds a default query for retrieving champions with emails.
+     *
+     * @return string The SQL query string.
+     */
+    private function getDefaultQuery(): string {
+        return "SELECT cid, email, first_name, country FROM hl_champions
+                WHERE email != :blank
+                AND email IS NOT NULL
+                AND email NOT LIKE :point";
     }
 }

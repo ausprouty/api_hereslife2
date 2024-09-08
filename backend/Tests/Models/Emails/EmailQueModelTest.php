@@ -3,121 +3,129 @@
 use PHPUnit\Framework\TestCase;
 use App\Models\Emails\EmailQueModel;
 use App\Services\DatabaseService;
+use \PDO;
 
-class EmailQueModelTest extends TestCase
-{
+class EmailQueModelTest extends TestCase {
+
     private $databaseServiceMock;
     private $emailQueModel;
 
-    protected function setUp(): void
-    {
-        // Mock DatabaseService
+    protected function setUp(): void {
+        // Mock the DatabaseService
         $this->databaseServiceMock = $this->createMock(DatabaseService::class);
 
-        // Inject the mock DatabaseService into EmailQueModel
-        $this->emailQueModel = new EmailQueModel($this->databaseServiceMock, [
-            'delay_until' => time(),
-            'email_from' => 'from@example.com',
-            'email_to' => 'to@example.com',
+        // Instantiate the EmailQueModel with the mocked DatabaseService
+        $this->emailQueModel = new EmailQueModel($this->databaseServiceMock);
+    }
+
+    public function testCreate() {
+        // Set values to the model
+        $params = [
+            'delay_until' => 1622505600,
+            'email_from' => 'test@example.com',
+            'email_to' => 'recipient@example.com',
             'email_id' => 1,
-            'champion_id' => 1,
+            'champion_id' => 2,
             'subject' => 'Test Subject',
-            'body' => 'Test Body',
-            'plain_text_only' => 1,
-            'headers' => '',
-            'plain_text_body' => 'Test Plain Text Body',
-            'template' => 'default',
-            'params' => '{}',
-        ]);
-    }
-
-    public function testSave()
-    {
-        // Mock the executeUpdate method to return success
-        $this->databaseServiceMock->expects($this->once())
-            ->method('executeUpdate')
-            ->with($this->anything(), $this->anything())
-            ->willReturn(1);  // Simulate a successful insert
-
-        // Act: Call save method
-        $result = $this->emailQueModel->save();
-
-        // Assert: Ensure save was successful
-        $this->assertEquals(1, $result);
-    }
-
-    public function testUpdate()
-    {
-        // Arrange: Set ID for the update operation
-        $this->emailQueModel->create([
-            'id' => 1,
-            'delay_until' => time(),
-            'email_from' => 'from@example.com',
-            'email_to' => 'to@example.com',
-            'email_id' => 1,
-            'champion_id' => 1,
-            'subject' => 'Updated Subject',
-            'body' => 'Updated Body',
-            'plain_text_only' => 1,
-            'headers' => '',
-            'plain_text_body' => 'Updated Plain Text Body',
-            'template' => 'updated-template',
-            'params' => '{}',
-        ]);
-
-        // Mock the executeUpdate method to return success
-        $this->databaseServiceMock->expects($this->once())
-            ->method('executeUpdate')
-            ->with($this->anything(), $this->anything())
-            ->willReturn(1);  // Simulate a successful update
-
-        // Act: Call update method
-        $result = $this->emailQueModel->update();
-
-        // Assert: Ensure update was successful
-        $this->assertEquals(1, $result);
-    }
-
-    public function testDelete()
-    {
-        // Arrange: Set ID for the delete operation
-        $this->emailQueModel->create([
-            'id' => 1
-        ]);
-
-        // Mock the executeUpdate method for delete
-        $this->databaseServiceMock->expects($this->once())
-            ->method('executeUpdate')
-            ->with($this->anything(), [':id' => 1])
-            ->willReturn(1);  // Simulate a successful delete
-
-        // Act: Call delete method
-        $result = $this->emailQueModel->delete();
-
-        // Assert: Ensure delete was successful
-        $this->assertEquals(1, $result);
-    }
-
-    public function testQueEmails()
-    {
-        // Arrange: Prepare a list of champions and mock save operations
-        $champions = [
-            ['cid' => 1],
-            ['cid' => 2],
-            ['cid' => 3]
+            'body' => 'This is a test body.',
+            'plain_text_only' => 0,
+            'headers' => 'Header: Value',
+            'plain_text_body' => 'Plain text body.',
+            'template' => 'template_name',
+            'params' => 'param=value',
         ];
-        $letterId = 1;
 
-        // Mock the save method to simulate multiple saves
-        $this->databaseServiceMock->expects($this->exactly(3))
+        $this->emailQueModel->setValues($params);
+
+        // Mock the executeUpdate and getLastInsertId methods
+        $this->databaseServiceMock
+            ->expects($this->once())
             ->method('executeUpdate')
-            ->with($this->anything(), $this->anything())
-            ->willReturn(1);  // Simulate successful saves for each champion
+            ->with($this->callback(function ($query) {
+                return strpos($query, 'INSERT INTO hl_email_que') !== false;
+            }), $this->isType('array'));
 
-        // Act: Call queEmails
-        $result = $this->emailQueModel->queEmails($champions, $letterId);
+        $this->databaseServiceMock
+            ->expects($this->once())
+            ->method('getLastInsertId')
+            ->willReturn('1');
 
-        // Assert: Check that the correct number of emails were queued
-        $this->assertEquals('3 emails qued', $result);
+        // Call create method and assert the result
+        $insertedId = $this->emailQueModel->create();
+        $this->assertEquals(1, $insertedId);
+    }
+
+    public function testUpdate() {
+        // Set values to the model, including an ID
+        $params = [
+            'id' => 1,
+            'delay_until' => 1622505600,
+            'email_from' => 'test@example.com',
+            'email_to' => 'recipient@example.com',
+            'email_id' => 1,
+            'champion_id' => 2,
+            'subject' => 'Test Subject',
+            'body' => 'This is a test body.',
+            'plain_text_only' => 0,
+            'headers' => 'Header: Value',
+            'plain_text_body' => 'Plain text body.',
+            'template' => 'template_name',
+            'params' => 'param=value',
+        ];
+
+        $this->emailQueModel->setValues($params);
+
+        // Mock the executeUpdate method
+        $this->databaseServiceMock
+            ->expects($this->once())
+            ->method('executeUpdate')
+            ->with($this->callback(function ($query) {
+                return strpos($query, 'UPDATE hl_email_que') !== false;
+            }), $this->isType('array'))
+            ->willReturn(true);
+
+        // Call update method and assert the result
+        $result = $this->emailQueModel->update();
+        $this->assertTrue($result);
+    }
+
+    public function testRead() {
+        // Mock the executeQuery method and its return value
+        $this->databaseServiceMock
+            ->expects($this->once())
+            ->method('executeQuery')
+            ->with($this->callback(function ($query) {
+                return strpos($query, 'SELECT * FROM hl_email_que WHERE id = :id') !== false;
+            }), $this->isType('array'))
+            ->willReturn($this->createConfiguredMock(PDOStatement::class, [
+                'fetch' => [
+                    'id' => 1,
+                    'email_from' => 'test@example.com',
+                    'email_to' => 'recipient@example.com',
+                    'subject' => 'Test Subject',
+                    'body' => 'This is a test body.'
+                ]
+            ]));
+
+        // Call read method and assert the result
+        $result = $this->emailQueModel->read(1);
+        $this->assertIsArray($result);
+        $this->assertEquals('test@example.com', $result['email_from']);
+        $this->assertEquals('recipient@example.com', $result['email_to']);
+    }
+
+    public function testDelete() {
+        // Mock the executeUpdate method for deletion
+        $this->databaseServiceMock
+            ->expects($this->once())
+            ->method('executeUpdate')
+            ->with($this->callback(function ($query) {
+                return strpos($query, 'DELETE FROM hl_email_que WHERE id = :id') !== false;
+            }), $this->isType('array'))
+            ->willReturn(true);
+
+        // Call delete method and assert the result
+        $result = $this->emailQueModel->delete(1);
+        $this->assertTrue($result);
     }
 }

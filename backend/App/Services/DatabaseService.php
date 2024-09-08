@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use PDO;
+use \PDO;
 use PDOException;
 use Exception;
 use InvalidArgumentException;
