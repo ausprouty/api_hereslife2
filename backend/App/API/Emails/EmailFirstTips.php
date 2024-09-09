@@ -39,3 +39,4 @@ $result = $emailListMemberController->processNewEmailTips();
 if (!$result) {
     error_log ("Error processing email tips.");
 }
+echo $result . " email tips processed successfully.";

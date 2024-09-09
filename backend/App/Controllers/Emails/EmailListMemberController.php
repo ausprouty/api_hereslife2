@@ -18,6 +18,7 @@ class EmailListMemberController {
         $this->emailListMemberModel = $emailListMemberModel;
         $this->emailModel = $emailModel;
         $this->emailQueModel = $emailQueModel;
+
     }
 
     /**
@@ -38,6 +39,8 @@ class EmailListMemberController {
      */
     public function processNewEmailTips()
     {
+        // Initialize the count of tips sent
+        $count = 0;
         // Fetch new requests for tips
         $newRequests = $this->emailListMemberModel->findNewRequestsForTips();
 
@@ -54,10 +57,12 @@ class EmailListMemberController {
 
                 // Update the member with the new data
                 $this->emailListMemberModel->update($request['id'], $data);
+                $count++;
             } else {
                 error_log("Error sending email to member: " . $request['id']);
             }
         }
+        return $count;
     }
 
     /**
@@ -80,11 +85,16 @@ class EmailListMemberController {
     public function queTipForMember($champion_id, $list_name, $sequence)
     {
         $email_id = $this->findTipForSeries($list_name, $sequence);
+        if (!$email_id || $email_id == null) {
+            writeLogAppend('queTipForMember-89', $email_id);
+            return 'FALSE';
+        }
         $data = [
             'champion_id' => $champion_id,
             'email_id' => $email_id
         ];
-        $this->emailQueModel->create($data)->save();
+        writeLogAppend('queTipForMember-95', $data);
+        $this->emailQueModel->create($data);
         return 'TRUE'; 
     }
 

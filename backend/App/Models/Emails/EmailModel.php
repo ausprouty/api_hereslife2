@@ -72,28 +72,24 @@ class EmailModel {
 
 
     public function update($id, $data) {
+        // Initialize fields array and params for the query
+        $fields = [];
+        $params = [':id' => $id];
+        
+        // Dynamically build the SET clause based on the provided data
+        foreach ($data as $key => $value) {
+            $fields[] = "$key = :$key";
+            $params[":$key"] = $value;
+        }
+        
+        // Construct the query using the dynamically built fields
         $query = "UPDATE hl_emails 
-                  SET subject = :subject, 
-                      body = :body, 
-                      plain_text_only = :plain_text_only, 
-                      headers = :headers, 
-                      template = :template, 
-                      series = :series, 
-                      sequence = :sequence, 
-                      params = :params
+                  SET " . implode(', ', $fields) . " 
                   WHERE id = :id";
-        $params = [
-            ':id' => $id,
-            ':subject' => $data['subject'],
-            ':body' => $data['body'],
-            ':plain_text_only' => $data['plain_text_only'],
-            ':headers' => $data['headers'],
-            ':template' => $data['template'],
-            ':series' => $data['series'],
-            ':sequence' => $data['sequence'],
-            ':params' => $data['params']
-        ];
+        
         return $this->databaseService->executeUpdate($query, $params);
+    }
+    
     }
 
     public function delete($id) {

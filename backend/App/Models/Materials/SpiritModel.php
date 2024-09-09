@@ -72,25 +72,42 @@ class SpiritModel {
             return $this->insert();
         }
     }
-    // Update an existing record
-    public function update($id) {
-        $query = "UPDATE hl_spirits 
-                    SET name = :name, webpage = :webpage, images = :images, hlId = :hlId, valid = :valid, promo = :promo
-                    WHERE id = :id";
-        
-        $params = [
-            ':id' => $id,
-            ':name' => $this->name,
-            ':webpage' => $this->webpage,
-            ':images' => $this->images,
-            ':hlId' => $this->hlId,
-            ':valid' => $this->valid,
-            ':promo' => $this->promo,
-        ];
+    /**
+ * Update an existing spirit record in the database.
+ *
+ * @param int   $id   The ID of the record to update.
+ * @param array $data The data to update.
+ * @return bool Returns true if the update was successful.
+ */
+    public function update($id, $data): bool {
+        if (!$id) {
+            throw new Exception("ID is required for updating the record.");
+        }
 
-        // Execute the query
+        // Initialize the fields array and params
+        $fields = [];
+        $params = [':id' => $id];
+
+        // Dynamically build the SET clause based on the provided data
+        foreach ($data as $key => $value) {
+            $fields[] = "$key = :$key";
+            $params[":$key"] = $value;
+        }
+
+        // If no data fields were provided, throw an exception
+        if (empty($fields)) {
+            throw new Exception("No fields to update.");
+        }
+
+        // Construct the query
+        $query = "UPDATE hl_spirits 
+                SET " . implode(', ', $fields) . " 
+                WHERE id = :id";
+
+        // Execute the update query
         return $this->databaseService->executeUpdate($query, $params);
     }
+
 
     public function getTitlesByLanguageName() {
         $query = "SELECT languageName FROM hl_spirit ORDER BY languageName";

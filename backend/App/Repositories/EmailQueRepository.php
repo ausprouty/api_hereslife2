@@ -55,40 +55,42 @@ class EmailQueueRepository {
      * @param EmailQueModel $emailQueModel
      * @return bool
      */
-    public function updateEmail(EmailQueModel $emailQueModel) {
-        $query = "UPDATE hl_email_que 
-                  SET delay_until = :delay_until, 
-                      email_from = :email_from, 
-                      email_to = :email_to, 
-                      email_id = :email_id, 
-                      champion_id = :champion_id, 
-                      subject = :subject, 
-                      body = :body, 
-                      plain_text_only = :plain_text_only, 
-                      headers = :headers, 
-                      plain_text_body = :plain_text_body, 
-                      template = :template, 
-                      params = :params
-                  WHERE id = :id";
-
-        $params = [
-            ':id' => $emailQueModel->getId(),
-            ':delay_until' => $emailQueModel->getDelayUntil(),
-            ':email_from' => $emailQueModel->getEmailFrom(),
-            ':email_to' => $emailQueModel->getEmailTo(),
-            ':email_id' => $emailQueModel->getEmailId(),
-            ':champion_id' => $emailQueModel->getChampionId(),
-            ':subject' => $emailQueModel->getSubject(),
-            ':body' => $emailQueModel->getBody(),
-            ':plain_text_only' => $emailQueModel->getPlainTextOnly(),
-            ':headers' => $emailQueModel->getHeaders(),
-            ':plain_text_body' => $emailQueModel->getPlainTextBody(),
-            ':template' => $emailQueModel->getTemplate(),
-            ':params' => $emailQueModel->getParams()
-        ];
-
-        return $this->databaseService->executeUpdate($query, $params);
+    /**
+ * Update an existing email record.
+ *
+ * @param int   $id   The ID of the email record to update.
+ * @param array $data The data to update.
+ * @return bool Returns true if the update was successful.
+ */
+public function updateEmail($id, $data): bool {
+    if (!$id) {
+        throw new Exception("ID is required for updating the email record.");
     }
+
+    // Initialize the fields array and params
+    $fields = [];
+    $params = [':id' => $id];
+
+    // Dynamically build the SET clause based on the provided data
+    foreach ($data as $key => $value) {
+        $fields[] = "$key = :$key";
+        $params[":$key"] = $value;
+    }
+
+    // If no data fields were provided, throw an exception
+    if (empty($fields)) {
+        throw new Exception("No fields to update.");
+    }
+
+    // Construct the query
+    $query = "UPDATE hl_email_que 
+              SET " . implode(', ', $fields) . " 
+              WHERE id = :id";
+
+    // Execute the update query
+    return $this->databaseService->executeUpdate($query, $params);
+}
+
 
     /**
      * Delete an email from the queue.

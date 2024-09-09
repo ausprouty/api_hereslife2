@@ -4,7 +4,7 @@ namespace App\Models\Emails;
 use App\Services\DatabaseService;
 use PDO;
 
-class XEmailListMemberModel {
+class EmailListMemberModel {
 
     private $databaseService;
 
@@ -73,32 +73,22 @@ class XEmailListMemberModel {
         return $this->insert();
     }
 
-    // Update an existing record
     public function update($id, $data) {
+        $fields = [];
+        $params = [':id' => $id];
+        // Dynamically build the query
+        foreach ($data as $key => $value) {
+            $fields[] = "$key = :$key";
+            $params[":$key"] = $value;
+        }
+        
         $query = "UPDATE hl_email_list_members 
-                  SET list_id = :list_id,
-                      list_name = :list_name,
-                      champion_id = :champion_id,
-                      subscribed = :subscribed,
-                      last_tip_sent = :last_tip_sent,
-                      last_tip_sent_time = :last_tip_sent_time,
-                      finished_all_tips = :finished_all_tips,
-                      unsubscribed = :unsubscribed
+                  SET " . implode(', ', $fields) . " 
                   WHERE id = :id";
-        $params = [
-            ':id' => $id,
-            ':list_id' => $data['list_id'],
-            ':list_name' => $data['list_name'],
-            ':champion_id' => $data['champion_id'],
-            ':subscribed' => $data['subscribed'],
-            ':last_tip_sent' => $data['last_tip_sent'],
-            ':last_tip_sent_time' => $data['last_tip_sent_time'],
-            ':finished_all_tips' => $data['finished_all_tips'],
-            ':unsubscribed' => $data['unsubscribed']
-        ];
+        
         return $this->databaseService->executeUpdate($query, $params);
     }
-
+    
     // Delete a record
     public function delete($id) {
         $query = "DELETE FROM hl_email_list_members WHERE id = :id";
@@ -149,7 +139,7 @@ class XEmailListMemberModel {
                   FROM hl_email_list_members
                   WHERE unsubscribed IS NULL
                   AND subscribed <= NOW() - INTERVAL 30 MINUTE
-                  AND last_tip_sent IS NULL";
+                  AND last_tip_sent = 0";
         
         $results = $this->databaseService->executeQuery($query);
         return $results->fetchAll(PDO::FETCH_ASSOC);

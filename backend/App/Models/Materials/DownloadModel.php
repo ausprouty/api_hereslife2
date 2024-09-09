@@ -91,38 +91,41 @@ class DownloadModel {
     }
 
     /**
-     * Update an existing download record in the database.
-     *
-     * @return bool Returns true if the update was successful.
-     */
-    public function update() {
-        $query = "UPDATE hl_downloads 
-                  SET champion_id = :champion_id,
-                      file_name = :file_name,
-                      download_date = :download_date,
-                      requested_tips = :requested_tips,
-                      sent_tips = :sent_tips,
-                      file_id = :file_id,
-                      elapsed_months = :elapsed_months,
-                      tip = :tip,
-                      tip_detail = :tip_detail
-                  WHERE id = :id";
-        
-        $params = [
-            ':champion_id' => $this->champion_id,
-            ':file_name' => $this->file_name,
-            ':download_date' => $this->download_date,
-            ':requested_tips' => $this->requested_tips,
-            ':sent_tips' => $this->sent_tips,
-            ':file_id' => $this->file_id,
-            ':elapsed_months' => $this->elapsed_months,
-            ':tip' => $this->tip,
-            ':tip_detail' => $this->tip_detail,
-            ':id' => $this->id
-        ];
+ * Update an existing download record in the database.
+ *
+ * @param int   $id   The ID of the record to update.
+ * @param array $data The data to update.
+ * @return bool Returns true if the update was successful.
+ */
+    public function update($id, $data): bool {
+        if (!$id) {
+            throw new Exception("ID is required for updating the record.");
+        }
 
+        // Initialize the fields array and params
+        $fields = [];
+        $params = [':id' => $id];
+
+        // Dynamically build the SET clause based on the provided data
+        foreach ($data as $key => $value) {
+            $fields[] = "$key = :$key";
+            $params[":$key"] = $value;
+        }
+
+        // If no data fields were provided, throw an exception
+        if (empty($fields)) {
+            throw new Exception("No fields to update.");
+        }
+
+        // Construct the query
+        $query = "UPDATE hl_downloads 
+                SET " . implode(', ', $fields) . " 
+                WHERE id = :id";
+
+        // Execute the update query
         return $this->databaseService->executeUpdate($query, $params);
     }
+
 
     /**
      * Create a new download record or update an existing one.

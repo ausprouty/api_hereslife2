@@ -71,14 +71,13 @@ class EmailQueModel {
         }
     }
 
-    
     /**
-     * Create a new email queue entry in the database.
+     * Inserts the object's data into the database.
      *
      * @return int|null The ID of the newly inserted record.
      * @throws Exception if the query execution fails.
      */
-    public function create() {
+    public function insert() {
         $query = "INSERT INTO hl_email_que (delay_until, email_from, email_to, email_id, champion_id, subject, body, plain_text_only, headers, plain_text_body, template, params)
                   VALUES (:delay_until, :email_from, :email_to, :email_id, :champion_id, :subject, :body, :plain_text_only, :headers, :plain_text_body, :template, :params)";
         
@@ -102,6 +101,17 @@ class EmailQueModel {
     }
 
     /**
+     * Combines setValues and insert to create a new record.
+     *
+     * @param array $params Associative array of values to set.
+     * @return int|null The ID of the newly inserted record.
+     */
+    public function create($params) {
+        $this->setValues($params);
+        return $this->insert();
+    }
+
+    /**
      * Read an email queue entry from the database based on the given ID.
      *
      * @param int $id The ID of the email queue entry to read.
@@ -121,35 +131,35 @@ class EmailQueModel {
      * @return bool True if the update was successful, false otherwise.
      * @throws Exception if the query execution fails.
      */
-    public function update(): bool {
-        if (!$this->id) {
+    public function update($id, $data): bool {
+        if (!$id) {
             throw new Exception("ID is required for updating the record.");
         }
-
+    
+        // Initialize the fields array and params
+        $fields = [];
+        $params = [':id' => $id];
+    
+        // Dynamically build the SET clause based on the provided data
+        foreach ($data as $key => $value) {
+            $fields[] = "$key = :$key";
+            $params[":$key"] = $value;
+        }
+    
+        // If no data fields were provided, throw an exception
+        if (empty($fields)) {
+            throw new Exception("No fields to update.");
+        }
+    
+        // Construct the query
         $query = "UPDATE hl_email_que 
-                  SET delay_until = :delay_until, email_from = :email_from, email_to = :email_to, email_id = :email_id, champion_id = :champion_id,
-                      subject = :subject, body = :body, plain_text_only = :plain_text_only, headers = :headers, plain_text_body = :plain_text_body,
-                      template = :template, params = :params
+                  SET " . implode(', ', $fields) . " 
                   WHERE id = :id";
-        
-        $params = [
-            ':delay_until' => $this->delay_until,
-            ':email_from' => $this->email_from,
-            ':email_to' => $this->email_to,
-            ':email_id' => $this->email_id,
-            ':champion_id' => $this->champion_id,
-            ':subject' => $this->subject,
-            ':body' => $this->body,
-            ':plain_text_only' => $this->plain_text_only,
-            ':headers' => $this->headers,
-            ':plain_text_body' => $this->plain_text_body,
-            ':template' => $this->template,
-            ':params' => $this->params,
-            ':id' => $this->id
-        ];
-
+    
+        // Execute the update query
         return $this->databaseService->executeUpdate($query, $params);
     }
+    
 
     /**
      * Delete an email queue entry from the database.
