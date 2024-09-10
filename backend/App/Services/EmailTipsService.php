@@ -24,8 +24,8 @@ class EmailTipsService
             $this->queTipForMember($request);
             // Update the record to mark the tip as sent
             $data = [
-                'last_tip_sent' => time(), // Current time
-                'last_tip_sent_time' => time(),
+                'last_tip_sent' => 1, // Current time
+                'last_tip_sent_time' => Now(),
             ];
             $this->emailListMemberModel->update($request['id'], $data);
         }

@@ -2,6 +2,7 @@
 namespace App\Models\Emails;
 
 use App\Services\DatabaseService;
+use App\Services\Debugging;
 use PDO;
 
 class EmailListMemberModel {
@@ -74,6 +75,7 @@ class EmailListMemberModel {
     }
 
     public function update($id, $data) {
+        writeLogAppend('EmailListMemeberModel-78', $data);
         $fields = [];
         $params = [':id' => $id];
         // Dynamically build the query
@@ -85,6 +87,8 @@ class EmailListMemberModel {
         $query = "UPDATE hl_email_list_members 
                   SET " . implode(', ', $fields) . " 
                   WHERE id = :id";
+        writeLogAppend('EmailListMemeberModel-90', $query);
+        writeLogAppend('EmailListMemeberModel-91', $params);
         
         return $this->databaseService->executeUpdate($query, $params);
     }
@@ -140,6 +144,16 @@ class EmailListMemberModel {
                   WHERE unsubscribed IS NULL
                   AND subscribed <= NOW() - INTERVAL 30 MINUTE
                   AND last_tip_sent = 0";
+        
+        $results = $this->databaseService->executeQuery($query);
+        return $results->fetchAll(PDO::FETCH_ASSOC);
+    }
+    public function findNextRequestsForTips() {
+        $query = "SELECT id, list_id, list_name, champion_id, subscribed, last_tip_sent, last_tip_sent_time, finished_all_tips, unsubscribed
+                  FROM hl_email_list_members
+                  WHERE unsubscribed IS NULL
+                  AND last_tip_sent_time <= NOW() - INTERVAL 7 DAY
+                  AND finished_all_tips IS NULL";
         
         $results = $this->databaseService->executeQuery($query);
         return $results->fetchAll(PDO::FETCH_ASSOC);

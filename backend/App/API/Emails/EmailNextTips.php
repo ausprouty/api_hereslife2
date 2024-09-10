@@ -1,0 +1,46 @@
+<?php
+
+use App\Controllers\Emails\EmailListMemberController;
+use App\Models\Emails\EmailListMemberModel;
+use App\Models\Emails\EmailModel;
+use App\Services\EmailTipsService;
+use App\Services\DatabaseService;
+use App\Services\EmailService;
+use App\Models\Emails\EmailQueModel;
+
+/**
+ * Initialize necessary services and models for handling email tips processing.
+ */
+
+// Instantiate the DatabaseService
+$databaseService = new DatabaseService();
+
+// Instantiate the EmailListMemberModel with a DatabaseService dependency
+$emailListMemberModel = new EmailListMemberModel($databaseService); 
+
+// Instantiate the EmailModel with a DatabaseService dependency
+$emailModel = new EmailModel($databaseService); 
+
+// Instantiate the EmailQueModel with a DatabaseService dependency
+$emailQueModel = new EmailQueModel($databaseService);  
+
+// Instantiate the EmailTipsService using the EmailListMemberModel
+$emailTipsService = new EmailTipsService($emailListMemberModel);
+
+// Instantiate the EmailListMemberController with required models
+$emailListMemberController = new EmailListMemberController(
+    $emailListMemberModel, 
+    $emailModel, 
+    $emailQueModel
+);
+
+// Process new email tips and log an error if it fails
+$result = $emailListMemberController->processNextEmailTips();
+if ($result) {
+    echo $result . " email tips processed successfully.";
+} else {
+    error_log ("Error processing email tips.");
+    echo "Error processing email tips.";
+}   
+
+

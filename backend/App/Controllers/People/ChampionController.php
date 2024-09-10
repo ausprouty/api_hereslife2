@@ -38,9 +38,9 @@ class ChampionController
     {
         $champion = $this->championRepository->findByCid($userId);
         if ($champion) {
-            $champion->setLastDownloadDate(time());
+            $champion->setLastDownloadDate(Now());
             if (!$champion->getFirstDownloadDate()) {
-                $champion->setFirstDownloadDate(time());
+                $champion->setFirstDownloadDate(Now());
             }
             $this->championRepository->save($champion);
         }

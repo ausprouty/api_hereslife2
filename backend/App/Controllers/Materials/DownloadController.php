@@ -18,7 +18,7 @@ class DownloadController {
     public function createDownloadRecord(array $rawData): DownloadModel {
         $download = new DownloadModel($this->database);
         $download->setValues($rawData);
-        $download->download_date = time(); // Set the download date to the current date and time
+        $download->download_date = Now(); // Set the download date to the current date and time
         $download->elapsed_months = $this->getElapsedMonthsSinceCentury(); // Calculate the elapsed months since the year 2000
         $download->insert(); // Save the model instance to the database
         return $download;

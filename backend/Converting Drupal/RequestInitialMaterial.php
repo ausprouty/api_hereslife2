@@ -72,14 +72,14 @@ function hl_email_request_initial_material_tips() {
                         ->fields(array(
                             'email_id' => $nid,
                             'champion_id' => $champion_id,
-                            'date_sent' => time()
+                            'date_sent' => Now()
                         ))
                         ->execute();
 
                     $body = str_replace('<p>|specific tips|</p>', $specific_tips, $body);
                     db_insert('hl_email_que')
                         ->fields(array(
-                            'delay_until' => time(),
+                            'delay_until' => Now(),
                             'champion_id' => $champion_id,
                             'email_id' => $email_id,
                             'body' => $body,
@@ -100,7 +100,7 @@ function hl_email_request_initial_material_tips() {
                             'tid' => $tid,
                             'cid' => $champion_id,
                             'sequence' => 1,
-                            'sent' => time()
+                            'sent' => Now()
                         ))
                         ->execute();
                 }
@@ -164,7 +164,7 @@ function hl_email_request_initial_material_tips() {
             // Update the hl_downloads table to indicate the tips were sent
             db_update('hl_downloads')
                 ->fields(array(
-                    'sent_tips' => time(),
+                    'sent_tips' => Now(),
                     'tip' => $nid,
                     'tip_detail' => isset($specific_nodes[$nid[0]]) ? $specific_nodes[$nid[0]] : NULL,
                 ))
@@ -178,14 +178,14 @@ function hl_email_request_initial_material_tips() {
                 ->fields(array(
                     'email_id' => $nid,
                     'champion_id' => $champion_id,
-                    'date_sent' => time()
+                    'date_sent' => Now()
                 ))
                 ->execute();
 
             $body = str_replace('<p>|specific tips|</p>', $specific_tips, $body);
             db_insert('hl_email_que')
                 ->fields(array(
-                    'delay_until' => time(),
+                    'delay_until' => Now(),
                     'champion_id' => $champion_id,
                     'email_id' => $email_id,
                     'body' => $body,

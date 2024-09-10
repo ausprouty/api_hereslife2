@@ -2,6 +2,7 @@
 namespace App\Models\Emails;
 
 use App\Services\DatabaseService;
+use App\Services\Debugging;
 use PDO;
 
 class EmailModel {
@@ -72,6 +73,9 @@ class EmailModel {
 
 
     public function update($id, $data) {
+
+        // Debugging: print the data being passed
+        writeLogAppend('update', $data); // This will print the actual data being passed
         // Initialize fields array and params for the query
         $fields = [];
         $params = [':id' => $id];
@@ -89,8 +93,7 @@ class EmailModel {
         
         return $this->databaseService->executeUpdate($query, $params);
     }
-    
-    }
+
 
     public function delete($id) {
         $query = "DELETE FROM hl_emails WHERE id = :id";

@@ -44,7 +44,7 @@ class DownloadModel {
             'id' => null,
             'champion_id' => null,
             'file_name' => '',
-            'download_date' => time(),
+            'download_date' => Now(),
             'requested_tips' => null,
             'sent_tips' => null,
             'file_id' => 0,
