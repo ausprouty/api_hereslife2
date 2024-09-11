@@ -1,5 +1,5 @@
 <?php
-namespace App\Services;
+namespace App\Services\Materials;
 
 class ResourceService {
     public function getResourceByFilename($fileName) {

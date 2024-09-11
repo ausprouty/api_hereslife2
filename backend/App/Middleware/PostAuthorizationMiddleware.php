@@ -2,9 +2,9 @@
 
 namespace App\Middleware;
 
-use App\Services\SanitizeInputService;
+use App\Services\Security\SanitizeInputService;
 use App\Controllers\Data\PostInputController;
-use App\Services\AuthorizationService;
+use App\Services\Security\AuthorizationService;
 
 /**
  * PostAuthorizationMiddleware

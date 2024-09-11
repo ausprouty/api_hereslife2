@@ -1,4 +1,5 @@
 <?php
+namespace App\Services\Emails;
 /*
 Purpose: Acts as the main service for managing the email queue. This class will coordinate the process of gathering champions, constructing emails, and queuing them for sending.
 Responsibilities:

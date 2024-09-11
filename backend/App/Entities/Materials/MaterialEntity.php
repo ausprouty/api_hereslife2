@@ -2,7 +2,7 @@
 
 namespace App\Entities\Materials;
 
-use App\Services\DatabaseService;
+use App\Services\Database\DatabaseService;
 
 /**
  * Class MaterialEntity

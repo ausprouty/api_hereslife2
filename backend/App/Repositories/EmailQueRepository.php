@@ -3,7 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Emails\EmailQueModel;
-use App\Services\DatabaseService;
+use App\Services\Database\DatabaseService;
 use PDO;
 
 class EmailQueueRepository {

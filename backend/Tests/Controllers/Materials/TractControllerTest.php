@@ -2,7 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 use App\Controllers\Materials\TractController;
-use App\Services\DatabaseService;
+use App\Services\Database\DatabaseService;
 use PDOStatement;
 
 class TractControllerTest extends TestCase

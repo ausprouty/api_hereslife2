@@ -2,7 +2,7 @@
 
 namespace App\Models\Materials;
 
-use App\Services\DatabaseService;
+use App\Services\Database\DatabaseService;
 use PDO;
 
 class SpiritModel {

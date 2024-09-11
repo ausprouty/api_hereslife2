@@ -2,8 +2,8 @@
 
 use App\Controllers\Materials\SpiritController;
 use App\Models\Materials\SpiritModel;
-use App\Services\DatabaseService;
-use App\Services\ResourceService;
+use App\Services\Database\DatabaseService;
+use App\Services\Materials\ResourceService;
 
 /**
  * Retrieve and output Spirit text by language as a JSON response.

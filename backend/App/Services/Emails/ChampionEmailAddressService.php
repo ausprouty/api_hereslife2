@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Emails;
 
-use App\Services\DatabaseService;
+use App\Services\Database\DatabaseService;
 use PDO;
 
 /**

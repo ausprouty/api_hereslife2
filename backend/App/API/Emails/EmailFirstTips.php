@@ -3,9 +3,9 @@
 use App\Controllers\Emails\EmailListMemberController;
 use App\Models\Emails\EmailListMemberModel;
 use App\Models\Emails\EmailModel;
-use App\Services\EmailTipsService;
-use App\Services\DatabaseService;
-use App\Services\EmailService;
+use App\Services\Emails\EmailTipsService;
+use App\Services\Database\DatabaseService;
+use App\Services\Emails\EmailService;
 use App\Models\Emails\EmailQueModel;
 
 /**

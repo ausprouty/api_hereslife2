@@ -1,7 +1,7 @@
 <?php
 Namespace App\Controllers\Materials;
 
-use App\Services\DatabaseService;
+use App\Services\Database\DatabaseService;
 use PDO;
 
 

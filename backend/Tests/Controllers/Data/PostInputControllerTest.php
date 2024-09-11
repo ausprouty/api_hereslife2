@@ -2,7 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 use App\Controllers\Data\PostInputController;
-use App\Services\SanitizeInputService;
+use App\Services\Security\SanitizeInputService;
 
 class PostInputControllerTest extends TestCase
 {

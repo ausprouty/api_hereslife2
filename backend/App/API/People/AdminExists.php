@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\People\AdministratorModel;
-use App\Services\DatabaseService;
+use App\Services\Database\DatabaseService;
 
 /**
  * Verify the existence of an administrator and return the result as a JSON response.

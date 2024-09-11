@@ -2,7 +2,7 @@
 
 namespace App\Controllers\Data;
 
-use App\Services\SanitizeInputService;
+use App\Services\Security\SanitizeInputService;
 
 class PostInputController
 {

@@ -1,5 +1,5 @@
 <?php
-namespace App\Services;
+namespace App\Services\Emails;
 
 use App\Models\Emails\EmailListMemberModel;
 

@@ -2,7 +2,7 @@
 
 namespace App\Models\People;
 
-use App\Services\DatabaseService;
+use App\Services\Database\DatabaseService;
 
 class EmailSeriesMemberModel {
     private $id;

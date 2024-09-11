@@ -1,5 +1,5 @@
 <?php
-namespace App\Services;
+namespace App\Services\Materials;
 
 use App\Controllers\Materials\MaterialController;
 use App\Controllers\People\ChampionController;

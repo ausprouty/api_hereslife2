@@ -2,7 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 use App\Services\ChampionEmailAddressService;
-use App\Services\DatabaseService;
+use App\Services\Database\DatabaseService;
 use PDOStatement;
 use PDO;
 

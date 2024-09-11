@@ -2,7 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 use App\Models\Emails\EmailModel;
-use App\Services\DatabaseService;
+use App\Services\Database\DatabaseService;
 use PDO;
 use PDOStatement;
 

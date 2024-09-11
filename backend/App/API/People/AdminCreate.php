@@ -1,8 +1,8 @@
 <?php
 
-use App\Services\AuthorizationService;
+use App\Services\Security\AuthorizationService;
 use App\Models\People\AdministratorModel;
-use App\Services\DatabaseService;
+use App\Services\Database\DatabaseService;
 
 /**
  * Create a new administrator and generate a JWT token for authentication.

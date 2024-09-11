@@ -2,7 +2,7 @@
 namespace App\Controllers\Materials;
 
 use App\Models\Materials\SpiritModel;
-use App\Services\ResourceService;
+use App\Services\Materials\ResourceService;
 
 class SpiritController {
 

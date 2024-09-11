@@ -2,7 +2,7 @@
 namespace App\Repositories;
 
 use App\Models\People\ChampionModel;
-use App\Services\DatabaseService;
+use App\Services\Database\DatabaseService;
 use Exception;
 
 class ChampionRepository

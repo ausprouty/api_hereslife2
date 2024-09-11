@@ -2,7 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 use App\Models\Materials\SpiritModel;
-use App\Services\DatabaseService;
+use App\Services\Database\DatabaseService;
 use PDOStatement;
 
 class SpiritModelTest extends TestCase

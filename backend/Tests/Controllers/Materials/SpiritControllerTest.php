@@ -3,7 +3,7 @@
 use PHPUnit\Framework\TestCase;
 use App\Controllers\Materials\SpiritController;
 use App\Models\Materials\SpiritModel;
-use App\Services\ResourceService;
+use App\Services\Materials\ResourceService;
 
 
 class SpiritControllerTest extends TestCase

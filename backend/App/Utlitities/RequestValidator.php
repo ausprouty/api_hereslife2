@@ -2,7 +2,7 @@
 
 namespace App\Utilities;
 
-use App\Services\AuthorizationService;
+use App\Services\Security\AuthorizationService;
 use App\Utilities\ErrorHandler;
 
 /**

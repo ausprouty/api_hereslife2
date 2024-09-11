@@ -2,7 +2,7 @@
 
 namespace App\Models\Emails;
 
-use App\Services\DatabaseService;
+use App\Services\Database\DatabaseService;
 
 /**
  * EmailSeriesModel
